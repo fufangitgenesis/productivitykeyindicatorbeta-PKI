@@ -1,8 +1,24 @@
 # Changelog
 
 ---
+### v0.9.0-alpha: Theme Customization (Latest)
 
-### **v0.7.0-alpha: Daily Quest System (Latest)**
+* Implemented a theme customization system with multiple pre-defined themes (Dark, Light, Rosé, Forest, etc.).
+
+* Created a theme selection modal for users to preview and apply different themes.
+
+* Refactored CSS to use variables, allowing for dynamic theme changes.
+
+* User's theme choice is now saved to localStorage and persists across sessions.
+
+### v0.8.0-alpha: UI Overhaul with Sidebar Navigation
+
+*  Replaced the top control bar with a collapsible sidebar menu for a cleaner interface.
+
+*  Moved profile management, data import/export, and settings into the new sidebar.
+
+*  Added a hamburger menu button to toggle the sidebar's visibility.
+### **v0.7.0-alpha: Daily Quest System **
 
 *   Added a daily quest system to enhance user engagement and provide motivation.
 *   Quests are tracked per-profile and reset automatically each day.
