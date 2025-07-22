@@ -1,75 +1,88 @@
-# productivitykeyindicatorbeta-PKI
-A tool for logging, scoring and tracking work effectiveness during a day. Created by Gemini 2.5 pro (using canvas features)
-# Productivity Tracker
+# Welcome to the Productivity Tracker!
 
-A single-file, zero-dependency web application to log your daily activities, track your productivity based on a point system, and visualize your progress over time.
+Welcome to your new Productivity Tracker! This guide will help you master its features to understand and boost your daily effectiveness.
 
+## 1. Getting Started: Logging Your First Activity
 
+The core of the tracker is the **Log Activity** form. Here’s how to use it:
 
-## Features
+1.  **Activity Description:** In this field, write a brief description of what you were doing (e.g., "Wrote project report," "Replied to emails," "Watched YouTube").
+2.  **Start Time & End Time:** Select the time you began and finished the activity.
+3.  **Category:** This is the most important part! Choose the category that best fits your activity. This choice directly impacts your productivity score.
+4.  **Add to Log:** Click this button to save the activity. It will immediately appear in the "Log for Today" table on the right.
 
-*   **Detailed Activity Logging:** Log activities with descriptions, start/end times, and categories.
-*   **Productivity Scoring System:** Each activity is assigned points based on its category to provide a daily productivity score.
-*   **Daily Summary:** Get an at-a-glance summary of your day's activities and total score.
-*   **Data Persistence:** All your data is saved locally in your browser's storage, so your logs are there when you return.
-*   **History Viewer:** Use the date picker to review and manage logs from previous days.
-*   **Analytics Dashboard:** Visualize your progress with weekly and monthly charts that show time spent per category and average scores.
-*   **Data Portability:** Export your daily logs to .csv or copy them as a Markdown report. You can also import data from .csv and .xlsx files.
+## 2. How Your Productivity Score is Calculated
 
-## How to Use
+The "Productivity Score" is designed to give you a simple, at-a-glance measure of how effectively you used your time during the day. It's not just about being busy; it's about being productive.
 
-This application is a self-contained HTML file. No installation is needed.
+### The Basic Idea
+Every minute you log is assigned a point value based on its category. Productive tasks add points to your score, while distractions subtract them.
 
-1.  Download the `.html` file (e.g., V5.html).
-2.  Open the file in any modern web browser like Chrome, Firefox, or Edge.
-3.  Start logging your activities!
+To be more specific, here is the exact point system based on a 30-minute block of time:
 
-## How It Works
+| Category | Points per 30 Mins | Purpose |
+| :--- | :--- | :--- |
+| **Deep Work** | +10 points | For highly focused, high-value tasks that require concentration (e.g., studying, coding, writing, strategic thinking). |
+| **Shallow Work** | +4 points | For necessary but less demanding tasks (e.g., planning, organizing, responding to emails). |
+| **Scheduled Leisure** | +2 points | For planned breaks and leisure activities that help you recharge (e.g., scheduled gaming, reading a book). |
+| **Scheduled Break** | +2 points | For essential rests like lunch or short breaks away from your desk. |
+| **Distraction** | -5 points | For unplanned, low-value activities that pull you away from your goals (e.g., aimless social media scrolling). |
+| **Rabbit Hole** | -10 points | For significant, unplanned distractions where you lose a large chunk of time. |
 
-### Logging an Activity
+Your **Total Score** for the day is the sum of the points from all your logged activities.
 
-The core of the tracker is the **Log Activity** form.
+> **Pro-Tip: What's a 'good' score?**
+> There's no magic number! The goal is to establish your own baseline and aim for gradual improvement. Focus on increasing your 'Total Productive Time' and seeing your 'Avg. Daily Score' rise over time.
 
-1.  **Activity Description:** Describe the task you were doing.
-2.  **Start & End Time:** Select the time you began and finished the activity.
-3.  **Category:** Choose the category that best fits your activity. This choice directly impacts your score.
-4.  **Add to Log:** Click to save the activity to your daily log.
+## 3. Challenge Yourself with Daily Quests (v0.7beta)
 
-### The Scoring System
+To help you stay motivated, the tracker now includes **Daily Quests**! These are small challenges that reset every day, designed to guide you towards building productive habits.
 
-The "Productivity Score" gives you a simple measure of how effectively you used your time. Every minute you log is assigned a point value based on its category.
+Completing quests is simple: just use the tracker as you normally would, and the quests will automatically be marked as complete when you meet their goals.
 
-Here is the exact point system based on a 30-minute block of time:
+Here are some of the quests you might encounter:
 
-| Category            | Points per 30 Mins | Purpose                                                    |
-| ------------------- | ------------------ | ---------------------------------------------------------- |
-| **Deep Work**       | +10 points         | For highly focused, high-value tasks (e.g., studying, coding). |
-| **Shallow Work**    | +4 points          | For necessary but less demanding tasks (e.g., planning, emails). |
-| **Scheduled Leisure** | +2 points          | For planned breaks and leisure that help you recharge.     |
-| **Scheduled Break** | +2 points          | For essential rests like lunch or short breaks.            |
-| **Distraction**     | -5 points          | For unplanned, low-value activities (e.g., aimless scrolling). |
-| **Rabbit Hole**     | -10 points         | For significant, unplanned distractions.                   |
+*   **Getting Started (Easy)**
+    *   **First Step:** Log your first activity of the day.
+    *   **Focused Sprint:** Complete a 30-minute deep work session.
+    *   **Point Collector:** Earn a total of 50 points.
+*   **Core Productivity (Medium)**
+    *   **The Power Hour:** Log a total of 60 minutes of "Deep Work".
+    *   **The 90-Minute Cycle:** Log a continuous 90-minute "Deep Work" session.
+    *   **Balanced Effort:** Log at least an hour of "Deep Work" and an hour of "Shallow Work".
+*   **Ambitious Goals (Hard)**
+    *   **Deep Work Marathon:** Log a total of 3 hours of "Deep Work".
+    *   **Elite Performer:** Earn a total of 300 points.
+    *   **Perfect Focus:** Complete the day with zero time logged as a distraction.
 
-#### Pro-Tip: What's a 'good' score?
+These quests are a fun way to challenge yourself and see how consistent you can be!
 
-There's no magic number! The goal is to establish your own baseline and aim for gradual improvement. Focus on increasing your 'Total Productive Time' and seeing your 'Avg. Daily Score' rise over time.
+## 4. Managing and Viewing Your Logs
 
-### Managing and Analyzing Your Data
+Once you have entries, you can manage them easily.
 
-*   **Editing/Deleting:** Hover over any log entry to reveal the edit (pencil) and delete (trash) icons.
-*   **Import/Export:** Use the buttons in the "Daily Summary" and log table headers to manage your data. **Note:** For a successful import, your file should contain columns for 'Start Time', 'End Time', 'Activity', and 'Category'.
-*   **Dashboard:** Scroll to the bottom to see the Analytics Dashboard. Toggle between "This Week" and "This Month" to analyze your long-term trends.
+*   **Viewing Past Days:** Use the date picker at the top of the log table to navigate to previous days and review your history.
+*   **Editing an Entry:** Made a mistake? Hover over a log entry and click the **pencil icon** to open the edit window.
+*   **Deleting an Entry:** Click the **trash can icon** on any entry to permanently remove it.
+*   **Clearing a Day:** If you want to start a day over, click the **"Clear Day"** button. **Warning:** This will delete all entries for the selected date.
 
-## License
+## 5. Importing & Exporting Your Data
 
-This project is licensed under the [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+You have full control over your data.
 
-This means you are free to share and adapt the work for non-commercial purposes, as long as you give appropriate credit and distribute any new versions under the same license. For any commercial use, please contact me directly.
+*   **Export CSV:** Creates a spreadsheet file (.csv) of the current day's log. This is great for saving your data or using it in other applications.
+*   **Copy Markdown:** Formats the day's log into a clean, text-based report. A window will pop up, allowing you to copy the report to your clipboard.
+*   **Import...:** Allows you to import logs from a .csv or .xlsx (Excel) file. After selecting a file, the app will ask if you want to **Merge** the imported activities with your current log or **Replace** the current log entirely.
 
-## Acknowledgements
+> **Note:** For a successful import, your file should contain columns for 'Start Time', 'End Time', 'Activity', and 'Category'.
 
-This project was built using Gemini AI and the following fantastic libraries:
+## 6. Analyzing Your Progress: The Dashboard
 
-*   [Tailwind CSS](https://tailwindcss.com/)
-*   [Chart.js](https://www.chartjs.org/)
-*   [SheetJS (xlsx)](https://sheetjs.com/)
+At the bottom of the page is your **Analytics Dashboard**, where you can see your long-term trends.
+
+*   **Toggle View:** Switch between **"This Week"** and **"This Month"** to change the time frame for the analysis.
+*   **Summary Cards:**
+    *   **Avg. Daily Score:** Your average productivity score for the selected period.
+    *   **Total Productive Time:** The combined time you spent on "Deep Work" and "Shallow Work."
+    *   **Total Distraction Time:** The combined time you spent on "Distraction" and "Rabbit Hole."
+*   **Analytics Chart:** This chart instantly visualizes where your hours go. Use it to spot trends and identify your biggest time sinks and opportunities for improvement.
