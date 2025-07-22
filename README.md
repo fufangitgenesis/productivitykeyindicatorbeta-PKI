@@ -1,11 +1,10 @@
 # productivitykeyindicatorbeta-PKI
-A tool for logging, scoring and tracking work effectiveness during a day
+A tool for logging, scoring and tracking work effectiveness during a day. Created by Gemini 2.5 pro (using canvas features)
 # Productivity Tracker
 
 A single-file, zero-dependency web application to log your daily activities, track your productivity based on a point system, and visualize your progress over time.
 
 
-*Note: You can replace the image URL above with a screenshot of your own application.*
 
 ## Features
 
@@ -69,7 +68,7 @@ This means you are free to share and adapt the work for non-commercial purposes,
 
 ## Acknowledgements
 
-This project was built using the following fantastic libraries:
+This project was built using Gemini AI and the following fantastic libraries:
 
 *   [Tailwind CSS](https://tailwindcss.com/)
 *   [Chart.js](https://www.chartjs.org/)
