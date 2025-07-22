@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,226 +11,315 @@
     <!-- Library for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        :root {
+            --color-bg-primary: #111827;
+            --color-bg-secondary: #1f2937;
+            --color-bg-tertiary: #374151;
+            --color-bg-inset: #111827;
+            --color-text-primary: #d1d5db;
+            --color-text-secondary: #9ca3af;
+            --color-text-heading: #ffffff;
+            --color-border-primary: #374151;
+            --color-accent: #4f46e5;
+            --color-accent-hover: #4338ca;
+            --color-chart-grid: rgba(255, 255, 255, 0.1);
+            --color-chart-ticks: #9ca3af;
+            --color-category-deep-work: rgba(74, 222, 128, 0.7);
+            --color-category-shallow-work: rgba(250, 204, 21, 0.7);
+            --color-category-leisure: rgba(96, 165, 250, 0.7);
+            --color-category-break: rgba(56, 189, 248, 0.7);
+            --color-category-distraction: rgba(248, 113, 113, 0.7);
+            --color-category-rabbit-hole: rgba(192, 132, 252, 0.7);
+        }
+
+        html[data-theme='light'] {
+            --color-bg-primary: #f3f4f6;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #e5e7eb;
+            --color-bg-inset: #f9fafb;
+            --color-text-primary: #374151;
+            --color-text-secondary: #6b7280;
+            --color-text-heading: #111827;
+            --color-border-primary: #d1d5db;
+            --color-accent: #4f46e5;
+            --color-accent-hover: #6366f1;
+            --color-chart-grid: rgba(0, 0, 0, 0.1);
+            --color-chart-ticks: #6b7280;
+            --color-category-deep-work: rgba(34, 197, 94, 0.8);
+            --color-category-shallow-work: rgba(234, 179, 8, 0.8);
+            --color-category-leisure: rgba(59, 130, 246, 0.8);
+            --color-category-break: rgba(14, 165, 233, 0.8);
+            --color-category-distraction: rgba(239, 68, 68, 0.8);
+            --color-category-rabbit-hole: rgba(168, 85, 247, 0.8);
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--color-bg-primary);
+            color: var(--color-text-primary);
+            transition: background-color 0.3s, color 0.3s;
         }
-        /* Custom scrollbar for better aesthetics */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #2d3748;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4a5568;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #718096;
-        }
-        .modal-backdrop {
-            transition: opacity 0.3s ease;
-        }
-        /* Style for the date picker to match the dark theme */
-        input[type="date"], select {
-            background-color: #4a5568;
-            color: #e2e8f0;
-            border: 1px solid #718096;
-            border-radius: 0.375rem;
-            padding: 0.25rem 0.5rem;
+
+        .bg-primary { background-color: var(--color-bg-primary); }
+        .bg-secondary { background-color: var(--color-bg-secondary); }
+        .bg-tertiary { background-color: var(--color-bg-tertiary); }
+        .bg-inset { background-color: var(--color-bg-inset); }
+        .text-primary { color: var(--color-text-primary); }
+        .text-secondary { color: var(--color-text-secondary); }
+        .text-heading { color: var(--color-text-heading); }
+        .border-primary { border-color: var(--color-border-primary); }
+        .divide-primary > :not([hidden]) ~ :not([hidden]) { border-color: var(--color-border-primary); }
+        
+        input, select {
+            background-color: var(--color-bg-tertiary);
+            color: var(--color-text-primary);
+            border: 1px solid var(--color-border-primary);
         }
         input[type="date"]::-webkit-calendar-picker-indicator {
-            filter: invert(1);
+            filter: var(--color-bg-primary) === '#111827' ? 'invert(1)' : 'none';
         }
-        .dashboard-toggle-btn.active {
-            background-color: #4f46e5;
-            color: white;
+
+        /* Sidebar Styles */
+        #sidebar {
+            transition: transform 0.3s ease-in-out;
+            transform: translateX(-100%);
         }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+        
+        /* Theme Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-bg-tertiary); transition: .4s; border-radius: 28px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--color-accent); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
     </style>
 </head>
-<body class="bg-gray-900 text-gray-200 antialiased">
+<body class="antialiased">
 
-    <div class="container mx-auto p-4 md:p-8 max-w-7xl">
-
-        <!-- Header -->
-        <header class="text-center mb-4">
-            <h1 class="text-4xl font-bold text-white">Productivity Tracker</h1>
-            <p class="text-gray-400 mt-2">Log your activities, track your history, and visualize your progress.</p>
-        </header>
-
-        <!-- Profile and Global Controls -->
-        <div class="bg-gray-800 p-4 rounded-xl shadow-lg mb-8 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-2 flex-wrap">
-                <label for="profile-selector" class="font-semibold">Profile:</label>
-                <select id="profile-selector"></select>
-                <button id="add-profile-btn" class="text-sm bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Add Profile</button>
-                <button id="edit-profile-btn" class="text-sm bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Edit Profile</button>
-                <button id="delete-profile-btn" class="text-sm bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Delete Profile</button>
-            </div>
-            <div class="flex items-center gap-3">
-                <button id="import-all-btn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Import Backup</button>
-                <button id="export-all-btn" class="text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Export All Data</button>
-                <input type="file" id="import-all-input" class="hidden" accept=".json">
-            </div>
-        </div>
-
-
-        <!-- Main Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
-
-            <!-- Left Column: Input & Summary -->
-            <div class="lg:col-span-2 space-y-8">
-                
-                <!-- Input Form -->
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
-                    <h2 class="text-2xl font-semibold mb-4 text-white">Log Activity</h2>
-                    <form id="log-form" class="space-y-4">
-                        <div>
-                            <label for="activity" class="block text-sm font-medium text-gray-400">Activity Description</label>
-                            <input type="text" id="activity" name="activity" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                        </div>
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="start-time" class="block text-sm font-medium text-gray-400">Start Time</label>
-                                <input type="time" id="start-time" name="start-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                            </div>
-                            <div>
-                                <label for="end-time" class="block text-sm font-medium text-gray-400">End Time</label>
-                                <input type="time" id="end-time" name="end-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                            </div>
-                        </div>
-                        <div>
-                            <label for="category" class="block text-sm font-medium text-gray-400">Category</label>
-                            <select id="category" name="category" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                                <option value="deep-work">Deep Work (Study, etc.)</option>
-                                <option value="shallow-work">Shallow Work (Planning, Email)</option>
-                                <option value="leisure">Scheduled Leisure (Gaming, etc.)</option>
-                                <option value="break">Scheduled Break (Rest, Lunch)</option>
-                                <option value="distraction">Distraction (Unplanned browsing)</option>
-                                <option value="rabbit-hole">Distraction (Rabbit Hole)</option>
-                            </select>
-                        </div>
-                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 shadow-md">Add to Log</button>
-                    </form>
-                </div>
-
-                <!-- Summary Dashboard -->
-                <div class="bg-gray-800 p-6 rounded-xl shadow-lg">
-                    <h2 class="text-2xl font-semibold mb-4 text-white">Daily Summary</h2>
-                    <div class="space-y-4">
-                        <div class="flex justify-between items-center bg-gray-700 p-4 rounded-lg">
-                            <span class="font-bold text-lg">Productivity Score:</span>
-                            <span id="total-score" class="text-3xl font-bold text-indigo-400">0</span>
-                        </div>
-                        <div id="summary-details" class="space-y-2 text-sm">
-                            <!-- Summary details will be injected here by JS -->
-                        </div>
-                        <div class="border-t border-gray-700 pt-4 flex space-x-2">
-                            <button id="export-csv" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-300">Export Day (CSV)</button>
-                            <button id="export-md" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-300">Copy Day (MD)</button>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Right Column: Activity Log -->
-            <div class="lg:col-span-3 bg-gray-800 p-6 rounded-xl shadow-lg">
-                <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-                    <div class="flex items-center gap-4">
-                        <h2 id="log-title" class="text-2xl font-semibold text-white">Log for Today</h2>
-                        <input type="date" id="date-picker">
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button id="import-btn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Import Day...</button>
-                        <button id="clear-log" class="text-sm text-red-400 hover:text-red-500 transition-colors font-semibold">Clear Day</button>
-                        <input type="file" id="import-file-input" class="hidden" accept=".csv, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
-                    </div>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-700">
-                        <thead class="bg-gray-700/50">
-                            <tr>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Time</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Duration</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Activity</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">Points</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="log-table-body" class="divide-y divide-gray-700">
-                             <tr id="empty-row">
-                                <td colspan="6" class="text-center py-10 text-gray-500">Your logged activities will appear here.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- Analytics Dashboard -->
-        <div id="analytics-dashboard" class="mt-8 bg-gray-800 p-6 rounded-xl shadow-lg">
-            <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
-                <h2 class="text-2xl font-semibold text-white">Analytics Dashboard</h2>
-                <div class="flex rounded-lg bg-gray-700 p-1">
-                    <button id="weekly-btn" class="dashboard-toggle-btn px-4 py-1 text-sm font-semibold rounded-md transition-colors">This Week</button>
-                    <button id="monthly-btn" class="dashboard-toggle-btn px-4 py-1 text-sm font-semibold rounded-md transition-colors">This Month</button>
-                </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <div class="text-sm text-gray-400">Avg. Daily Score</div>
-                    <div id="avg-score" class="text-2xl font-bold text-indigo-400">0.0</div>
-                </div>
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <div class="text-sm text-gray-400">Total Productive Time</div>
-                    <div id="total-productive-time" class="text-2xl font-bold text-green-400">0h 0m</div>
-                </div>
-                <div class="bg-gray-700 p-4 rounded-lg">
-                    <div class="text-sm text-gray-400">Total Distraction Time</div>
-                    <div id="total-distraction-time" class="text-2xl font-bold text-red-400">0h 0m</div>
-                </div>
-            </div>
+    <!-- Sidebar -->
+    <aside id="sidebar" class="bg-secondary fixed top-0 left-0 z-40 w-64 h-screen p-4 overflow-y-auto shadow-xl">
+        <h2 class="text-2xl font-bold text-heading mb-6">Tracker Menu</h2>
+        
+        <div class="space-y-6">
+            <!-- Profile Section -->
             <div>
-                <canvas id="analytics-chart"></canvas>
+                <h3 class="text-xs font-semibold uppercase text-secondary mb-2">Profile</h3>
+                <div class="space-y-2">
+                    <select id="profile-selector" class="w-full p-2 rounded-md"></select>
+                    <button id="add-profile-btn" class="w-full text-sm bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-md transition-colors">Add Profile</button>
+                    <button id="edit-profile-btn" class="w-full text-sm bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-2 px-3 rounded-md transition-colors">Edit Profile</button>
+                    <button id="delete-profile-btn" class="w-full text-sm bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-md transition-colors">Delete Profile</button>
+                </div>
+            </div>
+
+            <!-- Data Management -->
+            <div>
+                <h3 class="text-xs font-semibold uppercase text-secondary mb-2">Data</h3>
+                <div class="space-y-2">
+                    <button id="import-all-btn" class="w-full text-sm bg-tertiary hover:bg-opacity-80 text-primary font-semibold py-2 px-3 rounded-md transition-colors">Import Backup</button>
+                    <button id="export-all-btn" class="w-full text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md transition-colors">Export All Data</button>
+                    <input type="file" id="import-all-input" class="hidden" accept=".json">
+                </div>
+            </div>
+
+            <!-- Settings -->
+            <div>
+                <h3 class="text-xs font-semibold uppercase text-secondary mb-2">Settings</h3>
+                <div class="flex justify-between items-center p-2 rounded-lg">
+                    <label for="theme-toggle" class="text-sm font-medium text-primary">Light Mode</label>
+                    <label class="switch">
+                        <input type="checkbox" id="theme-toggle">
+                        <span class="slider"></span>
+                    </label>
+                </div>
             </div>
         </div>
-    </div>
+    </aside>
+
+    <!-- Hamburger Menu Button -->
+    <button id="menu-toggle" class="fixed top-4 left-4 z-50 p-2 rounded-md bg-secondary shadow-lg">
+        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    </button>
+
+    <main id="main-content" class="transition-all duration-300">
+        <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+            <!-- Header -->
+            <header class="text-center mb-8">
+                <h1 class="text-4xl font-bold text-heading">Productivity Tracker</h1>
+                <p class="text-secondary mt-2">Log your activities, track your history, and visualize your progress.</p>
+            </header>
+
+            <!-- Main Content Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+
+                <!-- Left Column: Input & Summary -->
+                <div class="lg:col-span-2 space-y-8">
+                    
+                    <!-- Input Form -->
+                    <div class="bg-secondary p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-semibold mb-4 text-heading">Log Activity</h2>
+                        <form id="log-form" class="space-y-4">
+                            <!-- Form fields... -->
+                            <div>
+                                <label for="activity" class="block text-sm font-medium text-secondary">Activity Description</label>
+                                <input type="text" id="activity" name="activity" required class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2">
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="start-time" class="block text-sm font-medium text-secondary">Start Time</label>
+                                    <input type="time" id="start-time" name="start-time" required class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2">
+                                </div>
+                                <div>
+                                    <label for="end-time" class="block text-sm font-medium text-secondary">End Time</label>
+                                    <input type="time" id="end-time" name="end-time" required class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="category" class="block text-sm font-medium text-secondary">Category</label>
+                                <select id="category" name="category" class="mt-1 block w-full rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 p-2">
+                                    <option value="deep-work">Deep Work (Study, etc.)</option>
+                                    <option value="shallow-work">Shallow Work (Planning, Email)</option>
+                                    <option value="leisure">Scheduled Leisure (Gaming, etc.)</option>
+                                    <option value="break">Scheduled Break (Rest, Lunch)</option>
+                                    <option value="distraction">Distraction (Unplanned browsing)</option>
+                                    <option value="rabbit-hole">Distraction (Rabbit Hole)</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition duration-300 shadow-md">Add to Log</button>
+                        </form>
+                    </div>
+
+                    <!-- Summary Dashboard -->
+                    <div class="bg-secondary p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-semibold mb-4 text-heading">Daily Summary</h2>
+                        <div class="space-y-4">
+                            <div class="bg-tertiary p-4 rounded-lg">
+                                <div class="flex justify-between items-center">
+                                    <span class="font-bold text-lg text-primary">Productivity Score:</span>
+                                    <span id="total-score" class="text-3xl font-bold text-indigo-400">0</span>
+                                </div>
+                            </div>
+                            <div id="summary-details" class="space-y-2 text-sm">
+                                <!-- Summary details will be injected here by JS -->
+                            </div>
+                            <div class="border-t border-primary pt-4 flex space-x-2">
+                                <button id="export-csv" class="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-300">Export Day (CSV)</button>
+                                <button id="export-md" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md text-sm transition duration-300">Copy Day (MD)</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daily Quests Card -->
+                    <div id="daily-quests-card" class="bg-secondary p-6 rounded-xl shadow-lg">
+                        <h2 class="text-2xl font-semibold mb-4 text-heading">Daily Quests</h2>
+                        <div id="quests-list" class="space-y-3">
+                            <!-- Quests will be rendered here by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Activity Log -->
+                <div class="lg:col-span-3 bg-secondary p-6 rounded-xl shadow-lg">
+                    <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                        <div class="flex items-center gap-4">
+                            <h2 id="log-title" class="text-2xl font-semibold text-heading">Log for Today</h2>
+                            <input type="date" id="date-picker">
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button id="import-btn" class="text-sm bg-tertiary hover:bg-opacity-80 text-primary font-semibold py-1 px-3 rounded-md transition-colors">Import Day...</button>
+                            <button id="clear-log" class="text-sm text-red-400 hover:text-red-500 transition-colors font-semibold">Clear Day</button>
+                            <input type="file" id="import-file-input" class="hidden" accept=".csv, .xlsx, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-primary">
+                            <thead class="bg-tertiary/50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Time</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Duration</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Activity</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-secondary uppercase tracking-wider">Category</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-secondary uppercase tracking-wider">Points</th>
+                                    <th class="px-4 py-3 text-right text-xs font-medium text-secondary uppercase tracking-wider"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="log-table-body" class="divide-y divide-primary">
+                                 <tr id="empty-row">
+                                    <td colspan="6" class="text-center py-10 text-secondary">Your logged activities will appear here.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics Dashboard -->
+            <div id="analytics-dashboard" class="mt-8 bg-secondary p-6 rounded-xl shadow-lg">
+                <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
+                    <h2 class="text-2xl font-semibold text-heading">Analytics Dashboard</h2>
+                    <div class="flex rounded-lg bg-tertiary p-1">
+                        <button id="weekly-btn" class="dashboard-toggle-btn px-4 py-1 text-sm font-semibold rounded-md transition-colors text-primary">This Week</button>
+                        <button id="monthly-btn" class="dashboard-toggle-btn px-4 py-1 text-sm font-semibold rounded-md transition-colors text-primary">This Month</button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
+                    <div class="bg-tertiary p-4 rounded-lg">
+                        <div class="text-sm text-secondary">Avg. Daily Score</div>
+                        <div id="avg-score" class="text-2xl font-bold text-indigo-400">0.0</div>
+                    </div>
+                    <div class="bg-tertiary p-4 rounded-lg">
+                        <div class="text-sm text-secondary">Total Productive Time</div>
+                        <div id="total-productive-time" class="text-2xl font-bold text-green-400">0h 0m</div>
+                    </div>
+                    <div class="bg-tertiary p-4 rounded-lg">
+                        <div class="text-sm text-secondary">Total Distraction Time</div>
+                        <div id="total-distraction-time" class="text-2xl font-bold text-red-400">0h 0m</div>
+                    </div>
+                </div>
+                <div>
+                    <canvas id="analytics-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <!-- Modals -->
     <div id="edit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
-             <h3 class="text-xl font-semibold text-white">Edit Log Entry</h3>
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
+             <h3 class="text-xl font-semibold text-heading">Edit Log Entry</h3>
             <form id="edit-form" class="space-y-4">
                 <!-- Form content is dynamically generated by JS -->
             </form>
         </div>
     </div>
     <div id="markdown-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-2xl space-y-4">
-            <h3 class="text-xl font-semibold text-white">Export as Markdown</h3>
-            <textarea id="markdown-output" readonly class="w-full h-64 bg-gray-900 text-gray-300 font-mono text-sm p-3 rounded-md border border-gray-700 focus:ring-indigo-500 focus:border-indigo-500"></textarea>
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl space-y-4">
+            <h3 class="text-xl font-semibold text-heading">Export as Markdown</h3>
+            <textarea id="markdown-output" readonly class="w-full h-64 bg-primary text-primary font-mono text-sm p-3 rounded-md border border-primary focus:ring-indigo-500 focus:border-indigo-500"></textarea>
             <div class="flex justify-end space-x-3">
                 <button id="copy-md-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">Copy to Clipboard</button>
-                <button id="close-modal-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Close</button>
+                <button id="close-modal-btn" class="bg-tertiary hover:bg-opacity-80 text-primary font-bold py-2 px-4 rounded-md transition">Close</button>
             </div>
         </div>
     </div>
     <div id="edit-profile-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
-        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
-            <h3 class="text-xl font-semibold text-white">Edit Profile</h3>
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
+            <h3 class="text-xl font-semibold text-heading">Edit Profile</h3>
             <form id="edit-profile-form" class="space-y-4">
                 <div>
-                    <label for="edit-profile-name" class="block text-sm font-medium text-gray-400">Profile Name</label>
-                    <input type="text" id="edit-profile-name" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
+                    <label for="edit-profile-name" class="block text-sm font-medium text-secondary">Profile Name</label>
+                    <input type="text" id="edit-profile-name" required class="mt-1 block w-full rounded-md shadow-sm p-2">
                 </div>
                 <div>
-                    <label for="edit-profile-bio" class="block text-sm font-medium text-gray-400">Bio</label>
-                    <textarea id="edit-profile-bio" rows="3" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2"></textarea>
+                    <label for="edit-profile-bio" class="block text-sm font-medium text-secondary">Bio</label>
+                    <textarea id="edit-profile-bio" rows="3" class="mt-1 block w-full rounded-md shadow-sm p-2"></textarea>
                 </div>
                 <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" id="cancel-edit-profile-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button>
+                    <button type="button" id="cancel-edit-profile-btn" class="bg-tertiary hover:bg-opacity-80 text-primary font-bold py-2 px-4 rounded-md transition">Cancel</button>
                     <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md transition">Save Profile</button>
                 </div>
             </form>
@@ -246,19 +335,31 @@
             let analyticsChart = null;
             let currentDashboardView = 'weekly';
 
+            const QUESTS = {
+                'first_step': { title: 'First Step', description: 'Log your first activity of the day.' },
+                'focused_sprint': { title: 'Focused Sprint', description: 'Complete a 30-minute deep work session.' },
+                'point_collector': { title: 'Point Collector', description: 'Earn a total of 50 points.' },
+                'power_hour': { title: 'Power Hour', description: 'Log 60+ minutes of Deep Work.' },
+                'the_90_minute_cycle': { title: 'The 90-Minute Cycle', description: 'Log a continuous 90-minute Deep Work session.' },
+                'balanced_effort': { title: 'Balanced Effort', description: 'Log 60+ mins Deep & 60+ mins Shallow Work.' },
+                'deep_work_marathon': { title: 'Deep Work Marathon', description: 'Log 3+ hours of Deep Work.' },
+                'elite_performer': { title: 'Elite Performer', description: 'Earn a total of 300 points.' },
+                'perfect_focus': { title: 'Perfect Focus', description: 'Complete the day with 0 distraction time.' },
+            };
+
             const CATEGORY_STYLES = {
-                'deep-work': { label: 'Deep Work', color: 'rgba(74, 222, 128, 0.7)', pointsPerMin: 10 / 30 },
-                'shallow-work': { label: 'Shallow Work', color: 'rgba(250, 204, 21, 0.7)', pointsPerMin: 4 / 30 },
-                'leisure': { label: 'Leisure', color: 'rgba(96, 165, 250, 0.7)', pointsPerMin: 2 / 30 },
-                'break': { label: 'Break', color: 'rgba(56, 189, 248, 0.7)', pointsPerMin: 2 / 30 },
-                'distraction': { label: 'Distraction', color: 'rgba(248, 113, 113, 0.7)', pointsPerMin: -5 / 30 },
-                'rabbit-hole': { label: 'Rabbit Hole', color: 'rgba(192, 132, 252, 0.7)', pointsPerMin: -10 / 30 }
+                'deep-work': { label: 'Deep Work', color: 'var(--color-category-deep-work)', pointsPerMin: 10 / 30 },
+                'shallow-work': { label: 'Shallow Work', color: 'var(--color-category-shallow-work)', pointsPerMin: 4 / 30 },
+                'leisure': { label: 'Leisure', color: 'var(--color-category-leisure)', pointsPerMin: 2 / 30 },
+                'break': { label: 'Break', color: 'var(--color-category-break)', pointsPerMin: 2 / 30 },
+                'distraction': { label: 'Distraction', color: 'var(--color-category-distraction)', pointsPerMin: -5 / 30 },
+                'rabbit-hole': { label: 'Rabbit Hole', color: 'var(--color-category-rabbit-hole)', pointsPerMin: -10 / 30 }
             };
             const CATEGORY_REVERSE_MAP = Object.entries(CATEGORY_STYLES).reduce((acc, [key, value]) => {
                 acc[value.label.toLowerCase()] = key;
                 return acc;
             }, {});
-            const STORAGE_KEY = 'productivityTrackerProfiles_v2'; // New key for new data structure
+            const STORAGE_KEY = 'productivityTrackerProfiles_v4'; 
 
             // --- DOM ELEMENT SELECTORS ---
             const form = document.getElementById('log-form');
@@ -295,10 +396,16 @@
             const editProfileModal = document.getElementById('edit-profile-modal');
             const editProfileForm = document.getElementById('edit-profile-form');
             const cancelEditProfileBtn = document.getElementById('cancel-edit-profile-btn');
+            const questsListEl = document.getElementById('quests-list');
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menu-toggle');
+            const mainContent = document.getElementById('main-content');
+            const themeToggle = document.getElementById('theme-toggle');
 
             // --- INITIALIZATION ---
             function initialize() {
                 loadAppData();
+                loadTheme();
                 datePicker.value = currentDate;
                 render();
                 addEventListeners();
@@ -327,6 +434,30 @@
                 exportAllBtn.addEventListener('click', exportAllData);
                 editProfileForm.addEventListener('submit', e => { e.preventDefault(); saveProfileEdit(); });
                 cancelEditProfileBtn.addEventListener('click', () => editProfileModal.classList.add('hidden'));
+                menuToggle.addEventListener('click', toggleSidebar);
+                themeToggle.addEventListener('change', handleThemeToggle);
+            }
+
+            // --- THEME & SIDEBAR ---
+            function toggleSidebar() {
+                sidebar.classList.toggle('open');
+                mainContent.classList.toggle('lg:ml-64');
+            }
+            function handleThemeToggle(e) {
+                setTheme(e.target.checked ? 'light' : 'dark');
+            }
+            function loadTheme() {
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                setTheme(savedTheme);
+            }
+            function setTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                themeToggle.checked = theme === 'light';
+                localStorage.setItem('theme', theme);
+                // Re-render chart with new theme colors
+                if(analyticsChart) {
+                    renderDashboard();
+                }
             }
 
             // --- DATA & PROFILE MANAGEMENT ---
@@ -336,32 +467,12 @@
                 if (savedData) {
                     appData = JSON.parse(savedData);
                 } else {
-                    // First time setup or migration from old version
-                    const oldData = localStorage.getItem('productivityTrackerProfiles');
-                    if (oldData) {
-                        const oldAppData = JSON.parse(oldData);
-                        // Migrate old data structure
-                        appData = {
-                            currentProfile: oldAppData.currentProfile,
-                            profiles: {}
-                        };
-                        for (const profileName in oldAppData.profiles) {
-                            appData.profiles[profileName] = {
-                                name: profileName,
-                                bio: '',
-                                logs: oldAppData.profiles[profileName]
-                            };
+                    appData = {
+                        currentProfile: 'Default',
+                        profiles: {
+                            'Default': { name: 'Default', bio: '', logs: {}, quests: {} }
                         }
-                        localStorage.removeItem('productivityTrackerProfiles'); // remove old data
-                    } else {
-                        // Completely new user
-                        appData = {
-                            currentProfile: 'Default',
-                            profiles: {
-                                'Default': { name: 'Default', bio: '', logs: {} }
-                            }
-                        };
-                    }
+                    };
                     saveAppData();
                 }
             }
@@ -370,7 +481,7 @@
             function addNewProfile() {
                 const profileName = prompt('Enter a name for the new profile:');
                 if (profileName && !appData.profiles[profileName]) {
-                    appData.profiles[profileName] = { name: profileName, bio: '', logs: {} };
+                    appData.profiles[profileName] = { name: profileName, bio: '', logs: {}, quests: {} };
                     appData.currentProfile = profileName;
                     saveAppData();
                     render();
@@ -456,10 +567,10 @@
             function addActivity() {
                 const newEntry = createEntryFromForm(form);
                 if (!newEntry) return;
-                const profileLogs = getCurrentProfile().logs;
-                if (!profileLogs[currentDate]) profileLogs[currentDate] = [];
-                profileLogs[currentDate].push(newEntry);
-                profileLogs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
+                const profile = getCurrentProfile();
+                if (!profile.logs[currentDate]) profile.logs[currentDate] = [];
+                profile.logs[currentDate].push(newEntry);
+                profile.logs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
                 saveAppData();
                 render();
                 form.reset();
@@ -495,7 +606,6 @@
                 }
             }
             
-            // *** FIXED FUNCTION ***
             function createEntryFromForm(formElement, id = null) {
                 let activity, startTime, endTime, category;
                 if (formElement.id === 'edit-form') {
@@ -527,17 +637,20 @@
             // --- RENDER FUNCTIONS ---
             function render() {
                 const profile = getCurrentProfile();
-                if (!profile) { // Handle case where profile might be deleted
+                if (!profile) {
                     appData.currentProfile = Object.keys(appData.profiles)[0];
                     render();
                     return;
                 }
-                const profileLogs = profile.logs;
-                const currentLog = profileLogs[currentDate] || [];
+                const currentLog = profile.logs[currentDate] || [];
+                
+                initializeAndEvaluateQuests(profile, currentDate, currentLog);
+
                 renderProfileSelector();
                 updateLogTitle();
                 renderLogTable(currentLog);
                 renderDailySummary(currentLog);
+                renderQuests(profile, currentDate);
                 renderDashboard();
             }
             function renderProfileSelector() {
@@ -558,19 +671,19 @@
                 if (log.length === 0) { logTableBody.appendChild(emptyRow); return; }
                 log.forEach(entry => {
                     const tr = document.createElement('tr');
-                    tr.classList.add('hover:bg-gray-700/50', 'transition-colors');
+                    tr.classList.add('hover:bg-tertiary/50', 'transition-colors');
                     const categoryStyle = CATEGORY_STYLES[entry.category];
                     tr.innerHTML = `
                         <td class="px-4 py-3 whitespace-nowrap text-sm">${entry.startTime} - ${entry.endTime}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-sm">${formatDuration(entry.duration)}</td>
                         <td class="px-4 py-3 whitespace-nowrap font-medium">${entry.activity}</td>
                         <td class="px-4 py-3 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full" style="background-color:${categoryStyle.color}; color: white;">${categoryStyle.label}</span>
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full text-white" style="background-color:${categoryStyle.color};">${categoryStyle.label}</span>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-bold ${entry.points > 0 ? 'text-green-400' : 'text-red-400'}">${entry.points.toFixed(1)}</td>
                         <td class="px-4 py-3 whitespace-nowrap text-right text-sm font-medium space-x-2">
-                            <button data-id="${entry.id}" class="edit-btn text-gray-400 hover:text-indigo-400 transition-colors" title="Edit"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" /></svg></button>
-                            <button data-id="${entry.id}" class="delete-btn text-gray-400 hover:text-red-500 transition-colors" title="Delete"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
+                            <button data-id="${entry.id}" class="edit-btn text-secondary hover:text-indigo-400 transition-colors" title="Edit"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" /></svg></button>
+                            <button data-id="${entry.id}" class="delete-btn text-secondary hover:text-red-500 transition-colors" title="Delete"><svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
                         </td>
                     `;
                     logTableBody.appendChild(tr);
@@ -587,6 +700,78 @@
                         <div class="flex items-center"><span class="h-3 w-3 rounded-full mr-2" style="background-color:${catStyle.color};"></span><span>${catStyle.label}</span></div>
                         <span class="font-semibold">${formatDuration(time)}</span>
                     </div>`;
+                }).join('');
+            }
+
+            // --- QUEST LOGIC ---
+            function initializeAndEvaluateQuests(profile, date, log) {
+                if (!profile.quests) profile.quests = {};
+                if (!profile.quests[date]) {
+                    profile.quests[date] = {};
+                    Object.keys(QUESTS).forEach(key => profile.quests[date][key] = false);
+                }
+                evaluateQuests(profile, date, log);
+            }
+
+            function evaluateQuests(profile, date, log) {
+                const dailyQuests = profile.quests[date];
+                if (!log || log.length === 0) {
+                    // Reset if no logs
+                    Object.keys(QUESTS).forEach(key => dailyQuests[key] = false);
+                    return;
+                };
+
+                // Calculate metrics
+                const totalPoints = log.reduce((sum, entry) => sum + entry.points, 0);
+                const timeByCategory = log.reduce((acc, entry) => {
+                    acc[entry.category] = (acc[entry.category] || 0) + entry.duration;
+                    return acc;
+                }, {});
+                const deepWorkTime = timeByCategory['deep-work'] || 0;
+                const shallowWorkTime = timeByCategory['shallow-work'] || 0;
+                const distractionTime = (timeByCategory['distraction'] || 0) + (timeByCategory['rabbit-hole'] || 0);
+                const has30MinDeepWork = log.some(e => e.category === 'deep-work' && e.duration >= 30);
+                const has90MinDeepWork = log.some(e => e.category === 'deep-work' && e.duration >= 90);
+
+                // Tier 1
+                dailyQuests.first_step = log.length > 0;
+                dailyQuests.focused_sprint = has30MinDeepWork;
+                dailyQuests.point_collector = totalPoints >= 50;
+                
+                // Tier 2
+                dailyQuests.power_hour = deepWorkTime >= 60;
+                dailyQuests.the_90_minute_cycle = has90MinDeepWork;
+                dailyQuests.balanced_effort = deepWorkTime >= 60 && shallowWorkTime >= 60;
+
+                // Tier 3
+                dailyQuests.deep_work_marathon = deepWorkTime >= 180;
+                dailyQuests.elite_performer = totalPoints >= 300;
+                dailyQuests.perfect_focus = distractionTime === 0;
+            }
+
+            function renderQuests(profile, date) {
+                const dailyQuests = profile.quests[date];
+                if (!dailyQuests || Object.keys(dailyQuests).length === 0) {
+                    questsListEl.innerHTML = '<p class="text-secondary">Log an activity to start your quests!</p>';
+                    return;
+                }
+
+                questsListEl.innerHTML = Object.keys(QUESTS).map(key => {
+                    const quest = QUESTS[key];
+                    const isCompleted = dailyQuests[key];
+                    return `
+                        <div class="quest-item flex items-start gap-3 ${isCompleted ? 'completed' : ''}">
+                            <div class="quest-icon mt-1">
+                                ${isCompleted 
+                                    ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>' 
+                                    : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'}
+                            </div>
+                            <div>
+                                <h4 class="font-semibold text-primary">${quest.title}</h4>
+                                <p class="text-xs text-secondary">${quest.description}</p>
+                            </div>
+                        </div>
+                    `;
                 }).join('');
             }
 
@@ -642,17 +827,23 @@
                 };
             }
             function renderAnalyticsChart(categoryTotals) {
+                const computedStyles = getComputedStyle(document.documentElement);
+                const gridColor = computedStyles.getPropertyValue('--color-chart-grid');
+                const tickColor = computedStyles.getPropertyValue('--color-chart-ticks');
+
                 const ctx = chartCanvas.getContext('2d');
                 const labels = Object.values(CATEGORY_STYLES).map(s => s.label);
                 const data = labels.map(label => {
                     const catKey = Object.keys(CATEGORY_STYLES).find(key => CATEGORY_STYLES[key].label === label);
                     return (categoryTotals[catKey] || 0) / 60;
                 });
-                const backgroundColors = Object.values(CATEGORY_STYLES).map(s => s.color);
+                const backgroundColors = Object.values(CATEGORY_STYLES).map(s => computedStyles.getPropertyValue(s.color.slice(4, -1)));
+                
                 if (analyticsChart) analyticsChart.destroy();
+                
                 analyticsChart = new Chart(ctx, {
                     type: 'bar', data: { labels, datasets: [{ label: 'Hours Spent', data, backgroundColor: backgroundColors, borderWidth: 1 }] },
-                    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#9ca3af' } }, y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#d1d5db' } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `Hours: ${c.raw.toFixed(2)}` } } } }
+                    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor } }, y: { grid: { color: gridColor }, ticks: { color: tickColor } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `Hours: ${c.raw.toFixed(2)}` } } } }
                 });
             }
 
@@ -664,13 +855,13 @@
                 // Dynamically create form content to avoid duplication
                 editForm.innerHTML = `
                     <input type="hidden" id="edit-entry-id" value="${entry.id}">
-                    <div><label for="edit-activity" class="block text-sm font-medium text-gray-400">Activity Description</label><input type="text" id="edit-activity" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2" value="${entry.activity.replace(/"/g, '&quot;')}"></div>
+                    <div><label for="edit-activity" class="block text-sm font-medium text-secondary">Activity Description</label><input type="text" id="edit-activity" required class="mt-1 block w-full rounded-md shadow-sm p-2" value="${entry.activity.replace(/"/g, '&quot;')}"></div>
                     <div class="grid grid-cols-2 gap-4">
-                        <div><label for="edit-start-time" class="block text-sm font-medium text-gray-400">Start Time</label><input type="time" id="edit-start-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2" value="${entry.startTime}"></div>
-                        <div><label for="edit-end-time" class="block text-sm font-medium text-gray-400">End Time</label><input type="time" id="edit-end-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2" value="${entry.endTime}"></div>
+                        <div><label for="edit-start-time" class="block text-sm font-medium text-secondary">Start Time</label><input type="time" id="edit-start-time" required class="mt-1 block w-full rounded-md shadow-sm p-2" value="${entry.startTime}"></div>
+                        <div><label for="edit-end-time" class="block text-sm font-medium text-secondary">End Time</label><input type="time" id="edit-end-time" required class="mt-1 block w-full rounded-md shadow-sm p-2" value="${entry.endTime}"></div>
                     </div>
-                    <div><label for="edit-category" class="block text-sm font-medium text-gray-400">Category</label><select id="edit-category" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2"></select></div>
-                    <div class="flex justify-end space-x-3 pt-2"><button type="button" id="cancel-edit-btn-inner" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">Save Changes</button></div>
+                    <div><label for="edit-category" class="block text-sm font-medium text-secondary">Category</label><select id="edit-category" class="mt-1 block w-full rounded-md shadow-sm p-2"></select></div>
+                    <div class="flex justify-end space-x-3 pt-2"><button type="button" id="cancel-edit-btn-inner" class="bg-tertiary hover:bg-opacity-80 text-primary font-bold py-2 px-4 rounded-md transition">Cancel</button><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">Save Changes</button></div>
                 `;
                 const categorySelect = editForm.querySelector('#edit-category');
                 Object.keys(CATEGORY_STYLES).forEach(key => {
