@@ -11,7 +11,7 @@
     <!-- Library for charts -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
+        :root, html[data-theme='dark'] {
             --color-bg-primary: #111827;
             --color-bg-secondary: #1f2937;
             --color-bg-tertiary: #374151;
@@ -45,13 +45,56 @@
             --color-accent-hover: #6366f1;
             --color-chart-grid: rgba(0, 0, 0, 0.1);
             --color-chart-ticks: #6b7280;
-            --color-category-deep-work: rgba(34, 197, 94, 0.8);
-            --color-category-shallow-work: rgba(234, 179, 8, 0.8);
-            --color-category-leisure: rgba(59, 130, 246, 0.8);
-            --color-category-break: rgba(14, 165, 233, 0.8);
-            --color-category-distraction: rgba(239, 68, 68, 0.8);
-            --color-category-rabbit-hole: rgba(168, 85, 247, 0.8);
         }
+        
+        html[data-theme='rose'] {
+            --color-bg-primary: #1c131a;
+            --color-bg-secondary: #2b1c26;
+            --color-bg-tertiary: #452c3d;
+            --color-text-primary: #fbe7f5;
+            --color-text-secondary: #e4badb;
+            --color-text-heading: #fff1fb;
+            --color-border-primary: #5e3a52;
+            --color-accent: #e11d48;
+            --color-accent-hover: #f43f5e;
+        }
+
+        html[data-theme='forest'] {
+            --color-bg-primary: #0f1713;
+            --color-bg-secondary: #1a2e25;
+            --color-bg-tertiary: #2a4a3e;
+            --color-text-primary: #d1fae5;
+            --color-text-secondary: #a7f3d0;
+            --color-text-heading: #ecfdf5;
+            --color-border-primary: #3d6e5a;
+            --color-accent: #22c55e;
+            --color-accent-hover: #4ade80;
+        }
+        
+        html[data-theme='ocean'] {
+            --color-bg-primary: #f0f9ff;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #e0f2fe;
+            --color-text-primary: #0c4a6e;
+            --color-text-secondary: #0369a1;
+            --color-text-heading: #082f49;
+            --color-border-primary: #bae6fd;
+            --color-accent: #0ea5e9;
+            --color-accent-hover: #38bdf8;
+        }
+
+        html[data-theme='slate'] {
+            --color-bg-primary: #f8fafc;
+            --color-bg-secondary: #ffffff;
+            --color-bg-tertiary: #f1f5f9;
+            --color-text-primary: #334155;
+            --color-text-secondary: #64748b;
+            --color-text-heading: #0f172a;
+            --color-border-primary: #e2e8f0;
+            --color-accent: #475569;
+            --color-accent-hover: #64748b;
+        }
+
 
         body {
             font-family: 'Inter', sans-serif;
@@ -88,13 +131,31 @@
             transform: translateX(0);
         }
         
-        /* Theme Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 50px; height: 28px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--color-bg-tertiary); transition: .4s; border-radius: 28px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--color-accent); }
-        input:checked + .slider:before { transform: translateX(22px); }
+        /* Modal transitions */
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        .modal-backdrop:not(.hidden) .modal-content {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Theme Preview Styles */
+        .theme-preview {
+            border: 2px solid transparent;
+            transition: border-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+        }
+        .theme-preview:hover {
+            transform: translateY(-4px);
+        }
+        .theme-preview.selected {
+            border-color: var(--color-accent);
+        }
 
     </style>
 </head>
@@ -129,13 +190,7 @@
             <!-- Settings -->
             <div>
                 <h3 class="text-xs font-semibold uppercase text-secondary mb-2">Settings</h3>
-                <div class="flex justify-between items-center p-2 rounded-lg">
-                    <label for="theme-toggle" class="text-sm font-medium text-primary">Light Mode</label>
-                    <label class="switch">
-                        <input type="checkbox" id="theme-toggle">
-                        <span class="slider"></span>
-                    </label>
-                </div>
+                <button id="customize-theme-btn" class="w-full text-sm bg-tertiary hover:bg-opacity-80 text-primary font-semibold py-2 px-3 rounded-md transition-colors">Customize Theme</button>
             </div>
         </div>
     </aside>
@@ -288,8 +343,19 @@
     </main>
 
     <!-- Modals -->
+    <div id="theme-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
+        <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-xl font-semibold text-heading">Customize Theme</h3>
+                <button id="close-theme-modal-btn" class="text-secondary hover:text-primary">&times;</button>
+            </div>
+            <div id="theme-previews" class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <!-- Theme previews will be rendered here by JS -->
+            </div>
+        </div>
+    </div>
     <div id="edit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
-        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
+        <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
              <h3 class="text-xl font-semibold text-heading">Edit Log Entry</h3>
             <form id="edit-form" class="space-y-4">
                 <!-- Form content is dynamically generated by JS -->
@@ -297,7 +363,7 @@
         </div>
     </div>
     <div id="markdown-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
-        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl space-y-4">
+        <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl space-y-4">
             <h3 class="text-xl font-semibold text-heading">Export as Markdown</h3>
             <textarea id="markdown-output" readonly class="w-full h-64 bg-primary text-primary font-mono text-sm p-3 rounded-md border border-primary focus:ring-indigo-500 focus:border-indigo-500"></textarea>
             <div class="flex justify-end space-x-3">
@@ -307,7 +373,7 @@
         </div>
     </div>
     <div id="edit-profile-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
-        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
+        <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
             <h3 class="text-xl font-semibold text-heading">Edit Profile</h3>
             <form id="edit-profile-form" class="space-y-4">
                 <div>
@@ -335,6 +401,15 @@
             let analyticsChart = null;
             let currentDashboardView = 'weekly';
 
+            const THEME_CONFIG = {
+                'dark': { name: 'Dark', colors: { bgPrimary: '#111827', bgSecondary: '#1f2937', bgTertiary: '#374151', accent: '#4f46e5' } },
+                'light': { name: 'Light', colors: { bgPrimary: '#f3f4f6', bgSecondary: '#ffffff', bgTertiary: '#e5e7eb', accent: '#4f46e5' } },
+                'rose': { name: 'Rosé', colors: { bgPrimary: '#1c131a', bgSecondary: '#2b1c26', bgTertiary: '#452c3d', accent: '#e11d48' } },
+                'forest': { name: 'Forest', colors: { bgPrimary: '#0f1713', bgSecondary: '#1a2e25', bgTertiary: '#2a4a3e', accent: '#22c55e' } },
+                'ocean': { name: 'Ocean', colors: { bgPrimary: '#f0f9ff', bgSecondary: '#ffffff', bgTertiary: '#e0f2fe', accent: '#0ea5e9' } },
+                'slate': { name: 'Slate', colors: { bgPrimary: '#f8fafc', bgSecondary: '#ffffff', bgTertiary: '#f1f5f9', accent: '#475569' } },
+            };
+
             const QUESTS = {
                 'first_step': { title: 'First Step', description: 'Log your first activity of the day.' },
                 'focused_sprint': { title: 'Focused Sprint', description: 'Complete a 30-minute deep work session.' },
@@ -359,7 +434,7 @@
                 acc[value.label.toLowerCase()] = key;
                 return acc;
             }, {});
-            const STORAGE_KEY = 'productivityTrackerProfiles_v4'; 
+            const STORAGE_KEY = 'productivityTrackerProfiles_v5'; 
 
             // --- DOM ELEMENT SELECTORS ---
             const form = document.getElementById('log-form');
@@ -400,7 +475,10 @@
             const sidebar = document.getElementById('sidebar');
             const menuToggle = document.getElementById('menu-toggle');
             const mainContent = document.getElementById('main-content');
-            const themeToggle = document.getElementById('theme-toggle');
+            const customizeThemeBtn = document.getElementById('customize-theme-btn');
+            const themeModal = document.getElementById('theme-modal');
+            const closeThemeModalBtn = document.getElementById('close-theme-modal-btn');
+            const themePreviewsContainer = document.getElementById('theme-previews');
 
             // --- INITIALIZATION ---
             function initialize() {
@@ -435,7 +513,9 @@
                 editProfileForm.addEventListener('submit', e => { e.preventDefault(); saveProfileEdit(); });
                 cancelEditProfileBtn.addEventListener('click', () => editProfileModal.classList.add('hidden'));
                 menuToggle.addEventListener('click', toggleSidebar);
-                themeToggle.addEventListener('change', handleThemeToggle);
+                customizeThemeBtn.addEventListener('click', openThemeModal);
+                closeThemeModalBtn.addEventListener('click', () => themeModal.classList.add('hidden'));
+                themePreviewsContainer.addEventListener('click', handleThemeSelection);
             }
 
             // --- THEME & SIDEBAR ---
@@ -443,20 +523,27 @@
                 sidebar.classList.toggle('open');
                 mainContent.classList.toggle('lg:ml-64');
             }
-            function handleThemeToggle(e) {
-                setTheme(e.target.checked ? 'light' : 'dark');
-            }
             function loadTheme() {
                 const savedTheme = localStorage.getItem('theme') || 'dark';
                 setTheme(savedTheme);
             }
             function setTheme(theme) {
                 document.documentElement.setAttribute('data-theme', theme);
-                themeToggle.checked = theme === 'light';
                 localStorage.setItem('theme', theme);
-                // Re-render chart with new theme colors
                 if(analyticsChart) {
                     renderDashboard();
+                }
+            }
+            function openThemeModal() {
+                renderThemePreviews();
+                themeModal.classList.remove('hidden');
+            }
+            function handleThemeSelection(e) {
+                const themeButton = e.target.closest('.theme-preview');
+                if (themeButton) {
+                    const themeName = themeButton.dataset.theme;
+                    setTheme(themeName);
+                    renderThemePreviews(); // Re-render to show selection
                 }
             }
 
@@ -828,8 +915,8 @@
             }
             function renderAnalyticsChart(categoryTotals) {
                 const computedStyles = getComputedStyle(document.documentElement);
-                const gridColor = computedStyles.getPropertyValue('--color-chart-grid');
-                const tickColor = computedStyles.getPropertyValue('--color-chart-ticks');
+                const gridColor = computedStyles.getPropertyValue('--color-chart-grid').trim();
+                const tickColor = computedStyles.getPropertyValue('--color-chart-ticks').trim();
 
                 const ctx = chartCanvas.getContext('2d');
                 const labels = Object.values(CATEGORY_STYLES).map(s => s.label);
@@ -837,7 +924,7 @@
                     const catKey = Object.keys(CATEGORY_STYLES).find(key => CATEGORY_STYLES[key].label === label);
                     return (categoryTotals[catKey] || 0) / 60;
                 });
-                const backgroundColors = Object.values(CATEGORY_STYLES).map(s => computedStyles.getPropertyValue(s.color.slice(4, -1)));
+                const backgroundColors = Object.values(CATEGORY_STYLES).map(s => computedStyles.getPropertyValue(s.color.slice(4, -1)).trim());
                 
                 if (analyticsChart) analyticsChart.destroy();
                 
@@ -988,6 +1075,30 @@
                     reader.readAsText(file);
                 }
                 importAllInput.value = '';
+            }
+            function renderThemePreviews() {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                themePreviewsContainer.innerHTML = Object.entries(THEME_CONFIG).map(([id, theme]) => {
+                    const isSelected = currentTheme === id;
+                    const colors = theme.colors;
+                    return `
+                        <button 
+                            class="theme-preview rounded-lg p-3 text-left cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-secondary focus:ring-accent ${isSelected ? 'selected' : ''}"
+                            data-theme="${id}" 
+                            aria-pressed="${isSelected}"
+                            aria-label="Select ${theme.name} theme"
+                        >
+                            <div class="w-full h-20 rounded-md p-2 flex flex-col gap-1" style="background-color: ${colors.bgPrimary};">
+                                <div class="h-3 rounded-sm" style="background-color: ${colors.accent};"></div>
+                                <div class="flex-grow flex gap-1">
+                                    <div class="w-1/3 h-full rounded-sm" style="background-color: ${colors.bgSecondary};"></div>
+                                    <div class="w-2/3 h-full rounded-sm" style="background-color: ${colors.bgTertiary};"></div>
+                                </div>
+                            </div>
+                            <p class="mt-2 text-sm font-semibold text-center" style="color: ${colors.textPrimary};">${theme.name}</p>
+                        </button>
+                    `;
+                }).join('');
             }
 
             // --- START THE APP ---
