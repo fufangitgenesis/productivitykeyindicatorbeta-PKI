@@ -18,7 +18,7 @@
 *  Moved profile management, data import/export, and settings into the new sidebar.
 
 *  Added a hamburger menu button to toggle the sidebar's visibility.
-### **v0.7.0-alpha: Daily Quest System **
+### v0.7.0-alpha: Daily Quest System 
 
 *   Added a daily quest system to enhance user engagement and provide motivation.
 *   Quests are tracked per-profile and reset automatically each day.
