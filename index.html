@@ -60,11 +60,12 @@
 
         <!-- Profile and Global Controls -->
         <div class="bg-gray-800 p-4 rounded-xl shadow-lg mb-8 flex flex-wrap justify-between items-center gap-4">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-2 flex-wrap">
                 <label for="profile-selector" class="font-semibold">Profile:</label>
                 <select id="profile-selector"></select>
-                <button id="add-profile-btn" class="text-sm bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-3 rounded-md transition-colors" title="Add New Profile">+</button>
-                <button id="delete-profile-btn" class="text-sm bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md transition-colors" title="Delete Current Profile">&ndash;</button>
+                <button id="add-profile-btn" class="text-sm bg-green-600 hover:bg-green-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Add Profile</button>
+                <button id="edit-profile-btn" class="text-sm bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Edit Profile</button>
+                <button id="delete-profile-btn" class="text-sm bg-red-600 hover:bg-red-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Delete Profile</button>
             </div>
             <div class="flex items-center gap-3">
                 <button id="import-all-btn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Import Backup</button>
@@ -136,8 +137,10 @@
             <!-- Right Column: Activity Log -->
             <div class="lg:col-span-3 bg-gray-800 p-6 rounded-xl shadow-lg">
                 <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
-                    <h2 id="log-title" class="text-2xl font-semibold text-white">Log for Today</h2>
-                     <input type="date" id="date-picker">
+                    <div class="flex items-center gap-4">
+                        <h2 id="log-title" class="text-2xl font-semibold text-white">Log for Today</h2>
+                        <input type="date" id="date-picker">
+                    </div>
                     <div class="flex items-center space-x-2">
                         <button id="import-btn" class="text-sm bg-gray-600 hover:bg-gray-700 text-white font-semibold py-1 px-3 rounded-md transition-colors">Import Day...</button>
                         <button id="clear-log" class="text-sm text-red-400 hover:text-red-500 transition-colors font-semibold">Clear Day</button>
@@ -195,41 +198,12 @@
         </div>
     </div>
 
-    <!-- Modals (Edit, Markdown) -->
+    <!-- Modals -->
     <div id="edit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
         <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
              <h3 class="text-xl font-semibold text-white">Edit Log Entry</h3>
             <form id="edit-form" class="space-y-4">
-                <input type="hidden" id="edit-entry-id">
-                <div>
-                    <label for="edit-activity" class="block text-sm font-medium text-gray-400">Activity Description</label>
-                    <input type="text" id="edit-activity" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label for="edit-start-time" class="block text-sm font-medium text-gray-400">Start Time</label>
-                        <input type="time" id="edit-start-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                    </div>
-                    <div>
-                        <label for="edit-end-time" class="block text-sm font-medium text-gray-400">End Time</label>
-                        <input type="time" id="edit-end-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                    </div>
-                </div>
-                <div>
-                    <label for="edit-category" class="block text-sm font-medium text-gray-400">Category</label>
-                    <select id="edit-category" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
-                        <option value="deep-work">Deep Work (Study, etc.)</option>
-                        <option value="shallow-work">Shallow Work (Planning, Email)</option>
-                        <option value="leisure">Scheduled Leisure (Gaming, etc.)</option>
-                        <option value="break">Scheduled Break (Rest, Lunch)</option>
-                        <option value="distraction">Distraction (Unplanned browsing)</option>
-                        <option value="rabbit-hole">Distraction (Rabbit Hole)</option>
-                    </select>
-                </div>
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" id="cancel-edit-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">Save Changes</button>
-                </div>
+                <!-- Form content is dynamically generated by JS -->
             </form>
         </div>
     </div>
@@ -243,6 +217,26 @@
             </div>
         </div>
     </div>
+    <div id="edit-profile-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
+        <div class="bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
+            <h3 class="text-xl font-semibold text-white">Edit Profile</h3>
+            <form id="edit-profile-form" class="space-y-4">
+                <div>
+                    <label for="edit-profile-name" class="block text-sm font-medium text-gray-400">Profile Name</label>
+                    <input type="text" id="edit-profile-name" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2">
+                </div>
+                <div>
+                    <label for="edit-profile-bio" class="block text-sm font-medium text-gray-400">Bio</label>
+                    <textarea id="edit-profile-bio" rows="3" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3 pt-2">
+                    <button type="button" id="cancel-edit-profile-btn" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button>
+                    <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md transition">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -264,7 +258,7 @@
                 acc[value.label.toLowerCase()] = key;
                 return acc;
             }, {});
-            const STORAGE_KEY = 'productivityTrackerProfiles';
+            const STORAGE_KEY = 'productivityTrackerProfiles_v2'; // New key for new data structure
 
             // --- DOM ELEMENT SELECTORS ---
             const form = document.getElementById('log-form');
@@ -281,7 +275,6 @@
             const logTitle = document.getElementById('log-title');
             const editModal = document.getElementById('edit-modal');
             const editForm = document.getElementById('edit-form');
-            const cancelEditBtn = document.getElementById('cancel-edit-btn');
             const markdownModal = document.getElementById('markdown-modal');
             const markdownOutput = document.getElementById('markdown-output');
             const copyMdBtn = document.getElementById('copy-md-btn');
@@ -294,10 +287,14 @@
             const chartCanvas = document.getElementById('analytics-chart');
             const profileSelector = document.getElementById('profile-selector');
             const addProfileBtn = document.getElementById('add-profile-btn');
+            const editProfileBtn = document.getElementById('edit-profile-btn');
             const deleteProfileBtn = document.getElementById('delete-profile-btn');
             const importAllBtn = document.getElementById('import-all-btn');
             const exportAllBtn = document.getElementById('export-all-btn');
             const importAllInput = document.getElementById('import-all-input');
+            const editProfileModal = document.getElementById('edit-profile-modal');
+            const editProfileForm = document.getElementById('edit-profile-form');
+            const cancelEditProfileBtn = document.getElementById('cancel-edit-profile-btn');
 
             // --- INITIALIZATION ---
             function initialize() {
@@ -311,7 +308,6 @@
                 form.addEventListener('submit', e => { e.preventDefault(); addActivity(); });
                 logTableBody.addEventListener('click', handleLogTableClick);
                 editForm.addEventListener('submit', e => { e.preventDefault(); saveEdit(); });
-                cancelEditBtn.addEventListener('click', () => editModal.classList.add('hidden'));
                 clearLogBtn.addEventListener('click', clearCurrentLog);
                 datePicker.addEventListener('change', handleDateChange);
                 importBtn.addEventListener('click', () => importFileInput.click());
@@ -324,10 +320,13 @@
                 monthlyBtn.addEventListener('click', () => setDashboardView('monthly'));
                 profileSelector.addEventListener('change', switchProfile);
                 addProfileBtn.addEventListener('click', addNewProfile);
+                editProfileBtn.addEventListener('click', openEditProfileModal);
                 deleteProfileBtn.addEventListener('click', deleteCurrentProfile);
                 importAllBtn.addEventListener('click', () => importAllInput.click());
                 importAllInput.addEventListener('change', importAllData);
                 exportAllBtn.addEventListener('click', exportAllData);
+                editProfileForm.addEventListener('submit', e => { e.preventDefault(); saveProfileEdit(); });
+                cancelEditProfileBtn.addEventListener('click', () => editProfileModal.classList.add('hidden'));
             }
 
             // --- DATA & PROFILE MANAGEMENT ---
@@ -337,28 +336,41 @@
                 if (savedData) {
                     appData = JSON.parse(savedData);
                 } else {
-                    // First time setup
-                    appData = {
-                        currentProfile: 'Default',
-                        profiles: {
-                            'Default': {}
+                    // First time setup or migration from old version
+                    const oldData = localStorage.getItem('productivityTrackerProfiles');
+                    if (oldData) {
+                        const oldAppData = JSON.parse(oldData);
+                        // Migrate old data structure
+                        appData = {
+                            currentProfile: oldAppData.currentProfile,
+                            profiles: {}
+                        };
+                        for (const profileName in oldAppData.profiles) {
+                            appData.profiles[profileName] = {
+                                name: profileName,
+                                bio: '',
+                                logs: oldAppData.profiles[profileName]
+                            };
                         }
-                    };
+                        localStorage.removeItem('productivityTrackerProfiles'); // remove old data
+                    } else {
+                        // Completely new user
+                        appData = {
+                            currentProfile: 'Default',
+                            profiles: {
+                                'Default': { name: 'Default', bio: '', logs: {} }
+                            }
+                        };
+                    }
                     saveAppData();
                 }
             }
-            function getCurrentProfileLogs() {
-                return appData.profiles[appData.currentProfile] || {};
-            }
-            function switchProfile() {
-                appData.currentProfile = profileSelector.value;
-                saveAppData();
-                render();
-            }
+            function getCurrentProfile() { return appData.profiles[appData.currentProfile]; }
+            function switchProfile() { appData.currentProfile = profileSelector.value; saveAppData(); render(); }
             function addNewProfile() {
                 const profileName = prompt('Enter a name for the new profile:');
                 if (profileName && !appData.profiles[profileName]) {
-                    appData.profiles[profileName] = {};
+                    appData.profiles[profileName] = { name: profileName, bio: '', logs: {} };
                     appData.currentProfile = profileName;
                     saveAppData();
                     render();
@@ -374,10 +386,45 @@
                 }
                 if (confirm(`Are you sure you want to delete the "${profileToDelete}" profile and all its data? This cannot be undone.`)) {
                     delete appData.profiles[profileToDelete];
-                    appData.currentProfile = Object.keys(appData.profiles)[0]; // Switch to the first available profile
+                    appData.currentProfile = Object.keys(appData.profiles)[0];
                     saveAppData();
                     render();
                 }
+            }
+            function openEditProfileModal() {
+                const profile = getCurrentProfile();
+                document.getElementById('edit-profile-name').value = profile.name;
+                document.getElementById('edit-profile-bio').value = profile.bio || '';
+                editProfileModal.classList.remove('hidden');
+            }
+            function saveProfileEdit() {
+                const oldName = appData.currentProfile;
+                const newName = document.getElementById('edit-profile-name').value.trim();
+                const newBio = document.getElementById('edit-profile-bio').value.trim();
+
+                if (!newName) {
+                    alert('Profile name cannot be empty.');
+                    return;
+                }
+
+                if (newName !== oldName && appData.profiles[newName]) {
+                    alert('A profile with this name already exists.');
+                    return;
+                }
+
+                const profileData = appData.profiles[oldName];
+                profileData.name = newName;
+                profileData.bio = newBio;
+
+                if (newName !== oldName) {
+                    appData.profiles[newName] = profileData;
+                    delete appData.profiles[oldName];
+                    appData.currentProfile = newName;
+                }
+                
+                saveAppData();
+                render();
+                editProfileModal.classList.add('hidden');
             }
 
             // --- DATE & TIME UTILITIES ---
@@ -409,40 +456,40 @@
             function addActivity() {
                 const newEntry = createEntryFromForm(form);
                 if (!newEntry) return;
-                const allLogs = getCurrentProfileLogs();
-                if (!allLogs[currentDate]) allLogs[currentDate] = [];
-                allLogs[currentDate].push(newEntry);
-                allLogs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
+                const profileLogs = getCurrentProfile().logs;
+                if (!profileLogs[currentDate]) profileLogs[currentDate] = [];
+                profileLogs[currentDate].push(newEntry);
+                profileLogs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
                 saveAppData();
                 render();
                 form.reset();
                 form.activity.focus();
             }
             function saveEdit() {
-                const allLogs = getCurrentProfileLogs();
+                const profileLogs = getCurrentProfile().logs;
                 const id = Number(document.getElementById('edit-entry-id').value);
-                const entryIndex = allLogs[currentDate]?.findIndex(e => e.id === id);
+                const entryIndex = profileLogs[currentDate]?.findIndex(e => e.id === id);
                 if (entryIndex === -1) return;
                 const updatedEntry = createEntryFromForm(editForm, id);
                 if (!updatedEntry) return;
-                allLogs[currentDate][entryIndex] = updatedEntry;
-                allLogs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
+                profileLogs[currentDate][entryIndex] = updatedEntry;
+                profileLogs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
                 saveAppData();
                 render();
                 editModal.classList.add('hidden');
             }
             function deleteActivity(id) {
-                const allLogs = getCurrentProfileLogs();
-                if (!allLogs[currentDate]) return;
-                allLogs[currentDate] = allLogs[currentDate].filter(entry => entry.id !== id);
-                if (allLogs[currentDate].length === 0) delete allLogs[currentDate];
+                const profileLogs = getCurrentProfile().logs;
+                if (!profileLogs[currentDate]) return;
+                profileLogs[currentDate] = profileLogs[currentDate].filter(entry => entry.id !== id);
+                if (profileLogs[currentDate].length === 0) delete profileLogs[currentDate];
                 saveAppData();
                 render();
             }
             function clearCurrentLog() {
                 if (confirm(`Are you sure you want to clear all entries for ${currentDate}?`)) {
-                    const allLogs = getCurrentProfileLogs();
-                    delete allLogs[currentDate];
+                    const profileLogs = getCurrentProfile().logs;
+                    delete profileLogs[currentDate];
                     saveAppData();
                     render();
                 }
@@ -463,8 +510,8 @@
 
             // --- RENDER FUNCTIONS ---
             function render() {
-                const allLogs = getCurrentProfileLogs();
-                const currentLog = allLogs[currentDate] || [];
+                const profileLogs = getCurrentProfile().logs;
+                const currentLog = profileLogs[currentDate] || [];
                 renderProfileSelector();
                 updateLogTitle();
                 renderLogTable(currentLog);
@@ -477,9 +524,7 @@
                     const option = document.createElement('option');
                     option.value = name;
                     option.textContent = name;
-                    if (name === appData.currentProfile) {
-                        option.selected = true;
-                    }
+                    if (name === appData.currentProfile) option.selected = true;
                     profileSelector.appendChild(option);
                 });
             }
@@ -553,7 +598,7 @@
                 let totalMinutes = {};
                 let totalScore = 0;
                 let daysWithLogs = 0;
-                const allLogs = getCurrentProfileLogs();
+                const allLogs = getCurrentProfile().logs;
                 for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                     const dateStr = d.toISOString().split('T')[0];
                     const dayLog = allLogs[dateStr];
@@ -591,14 +636,29 @@
 
             // --- MODAL & IMPORT/EXPORT FUNCTIONS ---
             function openEditModal(id) {
-                const allLogs = getCurrentProfileLogs();
-                const entry = allLogs[currentDate]?.find(e => e.id === id);
+                const profileLogs = getCurrentProfile().logs;
+                const entry = profileLogs[currentDate]?.find(e => e.id === id);
                 if (!entry) return;
-                document.getElementById('edit-entry-id').value = entry.id;
-                document.getElementById('edit-activity').value = entry.activity;
-                document.getElementById('edit-start-time').value = entry.startTime;
-                document.getElementById('edit-end-time').value = entry.endTime;
-                document.getElementById('edit-category').value = entry.category;
+                // Dynamically create form content to avoid duplication
+                editForm.innerHTML = `
+                    <input type="hidden" id="edit-entry-id" value="${entry.id}">
+                    <div><label for="edit-activity" class="block text-sm font-medium text-gray-400">Activity Description</label><input type="text" id="edit-activity" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2" value="${entry.activity.replace(/"/g, '&quot;')}"></div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div><label for="edit-start-time" class="block text-sm font-medium text-gray-400">Start Time</label><input type="time" id="edit-start-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2" value="${entry.startTime}"></div>
+                        <div><label for="edit-end-time" class="block text-sm font-medium text-gray-400">End Time</label><input type="time" id="edit-end-time" required class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2" value="${entry.endTime}"></div>
+                    </div>
+                    <div><label for="edit-category" class="block text-sm font-medium text-gray-400">Category</label><select id="edit-category" class="mt-1 block w-full bg-gray-700 border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 text-white p-2"></select></div>
+                    <div class="flex justify-end space-x-3 pt-2"><button type="button" id="cancel-edit-btn-inner" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-md transition">Cancel</button><button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-md transition">Save Changes</button></div>
+                `;
+                const categorySelect = editForm.querySelector('#edit-category');
+                Object.keys(CATEGORY_STYLES).forEach(key => {
+                    const option = document.createElement('option');
+                    option.value = key;
+                    option.textContent = CATEGORY_STYLES[key].label;
+                    if (key === entry.category) option.selected = true;
+                    categorySelect.appendChild(option);
+                });
+                editForm.querySelector('#cancel-edit-btn-inner').addEventListener('click', () => editModal.classList.add('hidden'));
                 editModal.classList.remove('hidden');
             }
             function handleFileImport(event) {
@@ -614,10 +674,10 @@
                     } catch (error) { alert(`Error parsing file: ${error.message}`); return; }
                     if (newEntries.length > 0) {
                         const merge = confirm('Import successful. MERGE with current day\'s log? (Cancel to REPLACE)');
-                        const allLogs = getCurrentProfileLogs();
-                        const currentLog = allLogs[currentDate] || [];
-                        allLogs[currentDate] = merge ? [...currentLog, ...newEntries] : newEntries;
-                        allLogs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
+                        const profileLogs = getCurrentProfile().logs;
+                        const currentLog = profileLogs[currentDate] || [];
+                        profileLogs[currentDate] = merge ? [...currentLog, ...newEntries] : newEntries;
+                        profileLogs[currentDate].sort((a, b) => a.startTime.localeCompare(b.startTime));
                         saveAppData();
                         render();
                     }
@@ -641,7 +701,7 @@
                 return createEntryFromForm({ querySelector: (sel) => ({ '[id*="-activity"]': { value: activity }, '[id*="-start-time"]': { value: startTime }, '[id*="-end-time"]': { value: endTime }, '[id*="-category"]': { value: categoryKey } })[sel] });
             }
             function exportToCSV() {
-                const currentLog = getCurrentProfileLogs()[currentDate] || [];
+                const currentLog = getCurrentProfile().logs[currentDate] || [];
                 if (currentLog.length === 0) return;
                 const headers = ['Start Time', 'End Time', 'Duration (min)', 'Activity', 'Category', 'Points'];
                 const rows = currentLog.map(entry => [ entry.startTime, entry.endTime, entry.duration.toFixed(0), `"${entry.activity.replace(/"/g, '""')}"`, CATEGORY_STYLES[entry.category].label, entry.points.toFixed(1) ]);
@@ -655,7 +715,7 @@
                 document.body.removeChild(link);
             }
             function generateMarkdown() {
-                const currentLog = getCurrentProfileLogs()[currentDate] || [];
+                const currentLog = getCurrentProfile().logs[currentDate] || [];
                 const totalScore = currentLog.reduce((sum, entry) => sum + entry.points, 0);
                 let md = `## Productivity Report - ${currentDate}\n\n`;
                 md += `**Total Score:** ${totalScore.toFixed(1)}\n\n`;
@@ -670,7 +730,7 @@
                 return md;
             }
             function showMarkdownModal() {
-                if ((getCurrentProfileLogs()[currentDate] || []).length === 0) return;
+                if ((getCurrentProfile().logs[currentDate] || []).length === 0) return;
                 markdownOutput.value = generateMarkdown();
                 markdownModal.classList.remove('hidden');
             }
@@ -699,11 +759,10 @@
                     reader.onload = (e) => {
                         try {
                             const importedData = JSON.parse(e.target.result);
-                            // Basic validation
                             if (importedData.currentProfile && importedData.profiles) {
                                 appData = importedData;
                                 saveAppData();
-                                currentDate = getTodayDateString(); // Reset to today on import
+                                currentDate = getTodayDateString();
                                 initialize();
                                 alert('Backup imported successfully!');
                             } else {
