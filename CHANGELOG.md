@@ -1,7 +1,5 @@
 # Changelog
 
-*Note: This project follows Semantic Versioning for initial development. Pre-release versions (`-alpha`) indicate that the features are in an early, potentially unstable stage.*
-
 ---
 
 ### **v0.7.0-alpha: Daily Quest System (Latest)**
