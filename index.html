@@ -467,7 +467,7 @@
             }
             function saveEdit() {
                 const profileLogs = getCurrentProfile().logs;
-                const id = Number(document.getElementById('edit-entry-id').value);
+                const id = Number(editForm.querySelector('#edit-entry-id').value);
                 const entryIndex = profileLogs[currentDate]?.findIndex(e => e.id === id);
                 if (entryIndex === -1) return;
                 const updatedEntry = createEntryFromForm(editForm, id);
@@ -494,15 +494,31 @@
                     render();
                 }
             }
+            
+            // *** FIXED FUNCTION ***
             function createEntryFromForm(formElement, id = null) {
-                const activity = formElement.querySelector('[id*="-activity"]').value;
-                const startTime = formElement.querySelector('[id*="-start-time"]').value;
-                const endTime = formElement.querySelector('[id*="-end-time"]').value;
-                const category = formElement.querySelector('[id*="-category"]').value;
+                let activity, startTime, endTime, category;
+                if (formElement.id === 'edit-form') {
+                    activity = formElement.querySelector('#edit-activity').value;
+                    startTime = formElement.querySelector('#edit-start-time').value;
+                    endTime = formElement.querySelector('#edit-end-time').value;
+                    category = formElement.querySelector('#edit-category').value;
+                } else { // Assumes log-form
+                    activity = formElement.querySelector('#activity').value;
+                    startTime = formElement.querySelector('#start-time').value;
+                    endTime = formElement.querySelector('#end-time').value;
+                    category = formElement.querySelector('#category').value;
+                }
+                
                 if (!activity || !startTime || !endTime || !category) return null;
+                
                 const start = new Date(`1970-01-01T${startTime}`);
                 const end = new Date(`1970-01-01T${endTime}`);
-                if (end <= start) return null;
+                if (end <= start) {
+                    alert("End time must be after start time.");
+                    return null;
+                }
+                
                 const duration = (end - start) / (1000 * 60);
                 const points = duration * CATEGORY_STYLES[category].pointsPerMin;
                 return { id: id || Date.now(), activity, startTime, endTime, duration, category, points };
@@ -510,7 +526,13 @@
 
             // --- RENDER FUNCTIONS ---
             function render() {
-                const profileLogs = getCurrentProfile().logs;
+                const profile = getCurrentProfile();
+                if (!profile) { // Handle case where profile might be deleted
+                    appData.currentProfile = Object.keys(appData.profiles)[0];
+                    render();
+                    return;
+                }
+                const profileLogs = profile.logs;
                 const currentLog = profileLogs[currentDate] || [];
                 renderProfileSelector();
                 updateLogTitle();
