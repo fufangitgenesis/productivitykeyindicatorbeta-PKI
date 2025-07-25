@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Productivity Tracker</title>
+    <title>Productivity Key Indicator</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Library for reading Excel files -->
@@ -157,13 +157,49 @@
             border-color: var(--color-accent);
         }
 
+        /* Quest Progress Bar */
+        .progress-bar-bg {
+            background-color: var(--color-bg-tertiary);
+        }
+        .progress-bar-fg {
+            background-color: var(--color-accent);
+            transition: width 0.5s ease-in-out;
+        }
+
+        /* Floating Action Buttons */
+        .fab {
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out, opacity 0.3s ease-in-out;
+        }
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Gradient for active dashboard button */
+        .active-gradient {
+            background-image: linear-gradient(to right, #a855f7, #ec4899);
+            color: white;
+        }
     </style>
 </head>
 <body class="antialiased">
 
+    <!-- Version Number -->
+    <div id="version-container" class="fixed top-4 right-4 z-50">
+        <p class="text-secondary text-xs font-semibold" id="version-number">v0.9.4-alpha</p>
+    </div>
+
+    <!-- Sidebar Overlay -->
+    <div id="sidebar-overlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden"></div>
+
     <!-- Sidebar -->
     <aside id="sidebar" class="bg-secondary fixed top-0 left-0 z-40 w-64 h-screen p-4 overflow-y-auto shadow-xl">
-        <h2 class="text-2xl font-bold text-heading mb-6">Tracker Menu</h2>
+        <button id="sidebar-close-btn" class="w-full flex items-center text-2xl font-bold text-heading mb-6 p-2 rounded-md hover:bg-tertiary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            <span>Menu</span>
+        </button>
         
         <div class="space-y-6">
             <!-- Profile Section -->
@@ -181,7 +217,7 @@
             <div>
                 <h3 class="text-xs font-semibold uppercase text-secondary mb-2">Data</h3>
                 <div class="space-y-2">
-                    <button id="import-all-btn" class="w-full text-sm bg-tertiary hover:bg-opacity-80 text-primary font-semibold py-2 px-3 rounded-md transition-colors">Import Backup</button>
+                    <button id="import-all-btn" class="w-full text-sm bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-3 rounded-md transition-colors">Import Backup</button>
                     <button id="export-all-btn" class="w-full text-sm bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-3 rounded-md transition-colors">Export All Data</button>
                     <input type="file" id="import-all-input" class="hidden" accept=".json">
                 </div>
@@ -195,24 +231,34 @@
         </div>
     </aside>
 
-    <!-- Hamburger Menu Button -->
-    <button id="menu-toggle" class="fixed top-4 left-4 z-50 p-2 rounded-md bg-secondary shadow-lg">
-        <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    <!-- Sidebar Toggle Button (Top Left) -->
+    <button id="sidebar-toggle-btn" class="fixed top-4 left-4 z-20 p-2 rounded-md bg-secondary shadow-lg">
+        <div class="w-6 h-6 flex flex-col justify-around">
+            <span class="hamburger-line block w-full h-0.5 bg-primary"></span>
+            <span class="hamburger-line block w-full h-0.5 bg-primary"></span>
+            <span class="hamburger-line block w-full h-0.5 bg-primary"></span>
+        </div>
     </button>
 
+    <!-- Add Activity FAB -->
+    <button id="add-activity-fab" class="fab fixed bottom-5 right-5 z-20 w-14 h-14 rounded-full bg-indigo-600 hover:bg-indigo-700 shadow-lg flex items-center justify-center text-white">
+        <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 11V5h2v6h6v2h-6v6h-2v-6H5v-2h6z"></path></svg>
+    </button>
+
+
     <main id="main-content" class="transition-all duration-300">
-        <div class="container mx-auto p-4 md:p-8 max-w-7xl">
+        <div class="container mx-auto p-4 pt-20 md:p-8 md:pt-8 max-w-7xl">
             <!-- Header -->
             <header class="text-center mb-8">
-                <h1 class="text-4xl font-bold text-heading">Productivity Tracker</h1>
-                <p class="text-secondary mt-2">Log your activities, track your history, and visualize your progress.</p>
+                <h1 class="text-4xl font-bold text-heading">Productivity Key Indicator</h1>
+                <p class="text-secondary mt-2">A logging and scoring daily system packed with features</p>
             </header>
 
             <!-- Main Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
                 <!-- Left Column: Input & Summary -->
-                <div class="lg:col-span-2 space-y-8">
+                <div class="lg:col-span-1 space-y-8">
                     
                     <!-- Input Form -->
                     <div class="bg-secondary p-6 rounded-xl shadow-lg">
@@ -268,17 +314,21 @@
                         </div>
                     </div>
 
-                    <!-- Daily Quests Card -->
-                    <div id="daily-quests-card" class="bg-secondary p-6 rounded-xl shadow-lg">
-                        <h2 class="text-2xl font-semibold mb-4 text-heading">Daily Quests</h2>
-                        <div id="quests-list" class="space-y-3">
-                            <!-- Quests will be rendered here by JS -->
-                        </div>
+                    <!-- Daily Quests Button -->
+                    <div class="bg-secondary p-6 rounded-xl shadow-lg">
+                         <button id="open-quests-modal-btn" class="w-full text-left">
+                            <h2 class="text-2xl font-semibold mb-2 text-heading">Daily Quests</h2>
+                            <p class="text-sm text-secondary">Click to view your progress on today's challenges.</p>
+                            <div class="relative mt-4 h-4 w-full rounded-full progress-bar-bg">
+                                <div id="overall-quest-progress" class="h-4 rounded-full progress-bar-fg" style="width: 0%;"></div>
+                                <span id="overall-quest-percentage" class="absolute w-full h-full top-0 left-0 flex items-center justify-center text-xs font-bold text-white">0%</span>
+                            </div>
+                        </button>
                     </div>
                 </div>
 
                 <!-- Right Column: Activity Log -->
-                <div class="lg:col-span-3 bg-secondary p-6 rounded-xl shadow-lg">
+                <div class="lg:col-span-2 bg-secondary p-6 rounded-xl shadow-lg">
                     <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
                         <div class="flex items-center gap-4">
                             <h2 id="log-title" class="text-2xl font-semibold text-heading">Log for Today</h2>
@@ -316,9 +366,9 @@
             <div id="analytics-dashboard" class="mt-8 bg-secondary p-6 rounded-xl shadow-lg">
                 <div class="flex justify-between items-center mb-4 flex-wrap gap-4">
                     <h2 class="text-2xl font-semibold text-heading">Analytics Dashboard</h2>
-                    <div class="flex rounded-lg bg-tertiary p-1">
-                        <button id="weekly-btn" class="dashboard-toggle-btn px-4 py-1 text-sm font-semibold rounded-md transition-colors text-primary">This Week</button>
-                        <button id="monthly-btn" class="dashboard-toggle-btn px-4 py-1 text-sm font-semibold rounded-md transition-colors text-primary">This Month</button>
+                    <div class="flex items-center space-x-2">
+                        <button id="weekly-btn" class="dashboard-toggle-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors">This Week</button>
+                        <button id="monthly-btn" class="dashboard-toggle-btn px-4 py-2 text-sm font-semibold rounded-lg transition-colors">This Month</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 text-center">
@@ -335,7 +385,7 @@
                         <div id="total-distraction-time" class="text-2xl font-bold text-red-400">0h 0m</div>
                     </div>
                 </div>
-                <div>
+                <div class="h-96">
                     <canvas id="analytics-chart"></canvas>
                 </div>
             </div>
@@ -343,7 +393,7 @@
     </main>
 
     <!-- Modals -->
-    <div id="theme-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
+    <div id="theme-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop z-50">
         <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl space-y-4">
             <div class="flex justify-between items-center">
                 <h3 class="text-xl font-semibold text-heading">Customize Theme</h3>
@@ -354,7 +404,7 @@
             </div>
         </div>
     </div>
-    <div id="edit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
+    <div id="edit-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop z-50">
         <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
              <h3 class="text-xl font-semibold text-heading">Edit Log Entry</h3>
             <form id="edit-form" class="space-y-4">
@@ -362,7 +412,7 @@
             </form>
         </div>
     </div>
-    <div id="markdown-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
+    <div id="markdown-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop z-50">
         <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl space-y-4">
             <h3 class="text-xl font-semibold text-heading">Export as Markdown</h3>
             <textarea id="markdown-output" readonly class="w-full h-64 bg-primary text-primary font-mono text-sm p-3 rounded-md border border-primary focus:ring-indigo-500 focus:border-indigo-500"></textarea>
@@ -372,7 +422,7 @@
             </div>
         </div>
     </div>
-    <div id="edit-profile-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop">
+    <div id="edit-profile-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop z-50">
         <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-lg space-y-4">
             <h3 class="text-xl font-semibold text-heading">Edit Profile</h3>
             <form id="edit-profile-form" class="space-y-4">
@@ -389,6 +439,18 @@
                     <button type="submit" class="bg-yellow-600 hover:bg-yellow-700 text-white font-bold py-2 px-4 rounded-md transition">Save Profile</button>
                 </div>
             </form>
+        </div>
+    </div>
+    <!-- Daily Quests Modal -->
+    <div id="quests-modal" class="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center p-4 hidden modal-backdrop z-50">
+        <div class="modal-content bg-secondary rounded-lg shadow-xl p-6 w-full max-w-3xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-semibold text-heading">Daily Quest Progress</h3>
+                <button id="close-quests-modal-btn" class="text-secondary hover:text-primary text-3xl">&times;</button>
+            </div>
+            <div id="quests-modal-list" class="space-y-6 max-h-[70vh] overflow-y-auto pr-2">
+                <!-- Quests will be rendered here by JS -->
+            </div>
         </div>
     </div>
 
@@ -411,15 +473,18 @@
             };
 
             const QUESTS = {
-                'first_step': { title: 'First Step', description: 'Log your first activity of the day.' },
-                'focused_sprint': { title: 'Focused Sprint', description: 'Complete a 30-minute deep work session.' },
-                'point_collector': { title: 'Point Collector', description: 'Earn a total of 50 points.' },
-                'power_hour': { title: 'Power Hour', description: 'Log 60+ minutes of Deep Work.' },
-                'the_90_minute_cycle': { title: 'The 90-Minute Cycle', description: 'Log a continuous 90-minute Deep Work session.' },
-                'balanced_effort': { title: 'Balanced Effort', description: 'Log 60+ mins Deep & 60+ mins Shallow Work.' },
-                'deep_work_marathon': { title: 'Deep Work Marathon', description: 'Log 3+ hours of Deep Work.' },
-                'elite_performer': { title: 'Elite Performer', description: 'Earn a total of 300 points.' },
-                'perfect_focus': { title: 'Perfect Focus', description: 'Complete the day with 0 distraction time.' },
+                // Tier 1
+                'first_step': { title: 'First Step', description: 'Log your first activity of the day.', tier: 1, target: 1 },
+                'focused_sprint': { title: 'Focused Sprint', description: 'Complete a 30-minute deep work session.', tier: 1, target: 30 },
+                'point_collector': { title: 'Point Collector', description: 'Earn a total of 50 points.', tier: 1, target: 50 },
+                // Tier 2
+                'power_hour': { title: 'Power Hour', description: 'Log 60+ minutes of Deep Work.', tier: 2, target: 60 },
+                'the_90_minute_cycle': { title: 'The 90-Minute Cycle', description: 'Log a continuous 90-minute Deep Work session.', tier: 2, target: 90 },
+                'balanced_effort': { title: 'Balanced Effort', description: 'Log 60+ mins Deep & 60+ mins Shallow Work.', tier: 2, target: 120 },
+                // Tier 3
+                'deep_work_marathon': { title: 'Deep Work Marathon', description: 'Log 3+ hours of Deep Work.', tier: 3, target: 180 },
+                'elite_performer': { title: 'Elite Performer', description: 'Earn a total of 300 points.', tier: 3, target: 300 },
+                'perfect_focus': { title: 'Perfect Focus', description: 'Complete the day with 0 distraction time.', tier: 3, target: 1 },
             };
 
             const CATEGORY_STYLES = {
@@ -471,14 +536,23 @@
             const editProfileModal = document.getElementById('edit-profile-modal');
             const editProfileForm = document.getElementById('edit-profile-form');
             const cancelEditProfileBtn = document.getElementById('cancel-edit-profile-btn');
-            const questsListEl = document.getElementById('quests-list');
             const sidebar = document.getElementById('sidebar');
-            const menuToggle = document.getElementById('menu-toggle');
+            const sidebarToggleBtn = document.getElementById('sidebar-toggle-btn');
+            const sidebarCloseBtn = document.getElementById('sidebar-close-btn');
+            const sidebarOverlay = document.getElementById('sidebar-overlay');
+            const addActivityFab = document.getElementById('add-activity-fab');
             const mainContent = document.getElementById('main-content');
             const customizeThemeBtn = document.getElementById('customize-theme-btn');
             const themeModal = document.getElementById('theme-modal');
             const closeThemeModalBtn = document.getElementById('close-theme-modal-btn');
             const themePreviewsContainer = document.getElementById('theme-previews');
+            const openQuestsModalBtn = document.getElementById('open-quests-modal-btn');
+            const questsModal = document.getElementById('quests-modal');
+            const closeQuestsModalBtn = document.getElementById('close-quests-modal-btn');
+            const questsModalList = document.getElementById('quests-modal-list');
+            const overallQuestProgress = document.getElementById('overall-quest-progress');
+            const overallQuestPercentage = document.getElementById('overall-quest-percentage');
+
 
             // --- INITIALIZATION ---
             function initialize() {
@@ -512,16 +586,29 @@
                 exportAllBtn.addEventListener('click', exportAllData);
                 editProfileForm.addEventListener('submit', e => { e.preventDefault(); saveProfileEdit(); });
                 cancelEditProfileBtn.addEventListener('click', () => editProfileModal.classList.add('hidden'));
-                menuToggle.addEventListener('click', toggleSidebar);
+                sidebarToggleBtn.addEventListener('click', openSidebar);
+                sidebarCloseBtn.addEventListener('click', closeSidebar);
+                sidebarOverlay.addEventListener('click', closeSidebar);
+                addActivityFab.addEventListener('click', () => {
+                    document.getElementById('activity').focus();
+                });
                 customizeThemeBtn.addEventListener('click', openThemeModal);
                 closeThemeModalBtn.addEventListener('click', () => themeModal.classList.add('hidden'));
                 themePreviewsContainer.addEventListener('click', handleThemeSelection);
+                openQuestsModalBtn.addEventListener('click', () => questsModal.classList.remove('hidden'));
+                closeQuestsModalBtn.addEventListener('click', () => questsModal.classList.add('hidden'));
             }
 
             // --- THEME & SIDEBAR ---
-            function toggleSidebar() {
-                sidebar.classList.toggle('open');
-                mainContent.classList.toggle('lg:ml-64');
+            function openSidebar() {
+                sidebar.classList.add('open');
+                sidebarOverlay.classList.remove('hidden');
+                sidebarToggleBtn.classList.add('hidden');
+            }
+            function closeSidebar() {
+                sidebar.classList.remove('open');
+                sidebarOverlay.classList.add('hidden');
+                sidebarToggleBtn.classList.remove('hidden');
             }
             function loadTheme() {
                 const savedTheme = localStorage.getItem('theme') || 'dark';
@@ -695,6 +782,7 @@
             
             function createEntryFromForm(formElement, id = null) {
                 let activity, startTime, endTime, category;
+                
                 if (formElement.id === 'edit-form') {
                     activity = formElement.querySelector('#edit-activity').value;
                     startTime = formElement.querySelector('#edit-start-time').value;
@@ -731,13 +819,13 @@
                 }
                 const currentLog = profile.logs[currentDate] || [];
                 
-                initializeAndEvaluateQuests(profile, currentDate, currentLog);
+                const questProgress = evaluateQuestProgress(currentLog);
 
                 renderProfileSelector();
                 updateLogTitle();
                 renderLogTable(currentLog);
                 renderDailySummary(currentLog);
-                renderQuests(profile, currentDate);
+                renderQuestsModal(questProgress);
                 renderDashboard();
             }
             function renderProfileSelector() {
@@ -791,24 +879,15 @@
             }
 
             // --- QUEST LOGIC ---
-            function initializeAndEvaluateQuests(profile, date, log) {
-                if (!profile.quests) profile.quests = {};
-                if (!profile.quests[date]) {
-                    profile.quests[date] = {};
-                    Object.keys(QUESTS).forEach(key => profile.quests[date][key] = false);
-                }
-                evaluateQuests(profile, date, log);
-            }
-
-            function evaluateQuests(profile, date, log) {
-                const dailyQuests = profile.quests[date];
+            function evaluateQuestProgress(log) {
+                const results = {};
                 if (!log || log.length === 0) {
-                    // Reset if no logs
-                    Object.keys(QUESTS).forEach(key => dailyQuests[key] = false);
-                    return;
-                };
+                    Object.keys(QUESTS).forEach(key => {
+                        results[key] = { current: 0, target: QUESTS[key].target, percent: 0 };
+                    });
+                    return results;
+                }
 
-                // Calculate metrics
                 const totalPoints = log.reduce((sum, entry) => sum + entry.points, 0);
                 const timeByCategory = log.reduce((acc, entry) => {
                     acc[entry.category] = (acc[entry.category] || 0) + entry.duration;
@@ -817,61 +896,87 @@
                 const deepWorkTime = timeByCategory['deep-work'] || 0;
                 const shallowWorkTime = timeByCategory['shallow-work'] || 0;
                 const distractionTime = (timeByCategory['distraction'] || 0) + (timeByCategory['rabbit-hole'] || 0);
-                const has30MinDeepWork = log.some(e => e.category === 'deep-work' && e.duration >= 30);
-                const has90MinDeepWork = log.some(e => e.category === 'deep-work' && e.duration >= 90);
+                const maxDeepWorkSession = Math.max(0, ...log.filter(e => e.category === 'deep-work').map(e => e.duration));
 
                 // Tier 1
-                dailyQuests.first_step = log.length > 0;
-                dailyQuests.focused_sprint = has30MinDeepWork;
-                dailyQuests.point_collector = totalPoints >= 50;
-                
+                results.first_step = { current: log.length > 0 ? 1 : 0, target: 1 };
+                results.focused_sprint = { current: maxDeepWorkSession, target: 30 };
+                results.point_collector = { current: totalPoints, target: 50 };
+
                 // Tier 2
-                dailyQuests.power_hour = deepWorkTime >= 60;
-                dailyQuests.the_90_minute_cycle = has90MinDeepWork;
-                dailyQuests.balanced_effort = deepWorkTime >= 60 && shallowWorkTime >= 60;
+                results.power_hour = { current: deepWorkTime, target: 60 };
+                results.the_90_minute_cycle = { current: maxDeepWorkSession, target: 90 };
+                results.balanced_effort = { current: Math.min(deepWorkTime, 60) + Math.min(shallowWorkTime, 60), target: 120 };
 
                 // Tier 3
-                dailyQuests.deep_work_marathon = deepWorkTime >= 180;
-                dailyQuests.elite_performer = totalPoints >= 300;
-                dailyQuests.perfect_focus = distractionTime === 0;
+                results.deep_work_marathon = { current: deepWorkTime, target: 180 };
+                results.elite_performer = { current: totalPoints, target: 300 };
+                results.perfect_focus = { current: distractionTime > 0 ? 0 : 1, target: 1 };
+
+                // Calculate percentages
+                for (const key in results) {
+                    results[key].percent = Math.min(100, (results[key].current / results[key].target) * 100);
+                }
+                return results;
             }
 
-            function renderQuests(profile, date) {
-                const dailyQuests = profile.quests[date];
-                if (!dailyQuests || Object.keys(dailyQuests).length === 0) {
-                    questsListEl.innerHTML = '<p class="text-secondary">Log an activity to start your quests!</p>';
-                    return;
-                }
+            function renderQuestsModal(questProgress) {
+                let totalPercent = 0;
+                const questTiers = { 1: [], 2: [], 3: [] };
 
-                questsListEl.innerHTML = Object.keys(QUESTS).map(key => {
+                Object.keys(QUESTS).forEach(key => {
                     const quest = QUESTS[key];
-                    const isCompleted = dailyQuests[key];
-                    return `
-                        <div class="quest-item flex items-start gap-3 ${isCompleted ? 'completed' : ''}">
-                            <div class="quest-icon mt-1">
-                                ${isCompleted 
-                                    ? '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" /></svg>' 
-                                    : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-secondary" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>'}
-                            </div>
-                            <div>
+                    const progress = questProgress[key];
+                    totalPercent += progress.percent;
+
+                    const questHtml = `
+                        <div class="quest-item">
+                            <div class="flex justify-between items-center mb-1">
                                 <h4 class="font-semibold text-primary">${quest.title}</h4>
-                                <p class="text-xs text-secondary">${quest.description}</p>
+                                <span class="text-xs font-mono text-secondary">${Math.floor(progress.current)} / ${progress.target}</span>
+                            </div>
+                            <p class="text-xs text-secondary mb-2">${quest.description}</p>
+                            <div class="w-full progress-bar-bg rounded-full h-2.5">
+                                <div class="progress-bar-fg h-2.5 rounded-full" style="width: ${progress.percent}%"></div>
                             </div>
                         </div>
                     `;
-                }).join('');
+                    questTiers[quest.tier].push(questHtml);
+                });
+
+                const finalPercentage = totalPercent / Object.keys(QUESTS).length;
+                overallQuestProgress.style.width = `${finalPercentage}%`;
+                overallQuestPercentage.textContent = `${Math.round(finalPercentage)}%`;
+
+                questsModalList.innerHTML = Object.keys(questTiers).map(tier => `
+                    <div>
+                        <h3 class="text-lg font-bold text-heading border-b border-primary pb-2 mb-4">Tier ${tier} Quests</h3>
+                        <div class="space-y-4">${questTiers[tier].join('')}</div>
+                    </div>
+                `).join('');
             }
 
             // --- ANALYTICS DASHBOARD LOGIC ---
             function renderDashboard() {
-                weeklyBtn.classList.toggle('active', currentDashboardView === 'weekly');
-                monthlyBtn.classList.toggle('active', currentDashboardView === 'monthly');
+                // Reset button styles
+                weeklyBtn.classList.remove('active-gradient', 'bg-tertiary', 'text-primary');
+                monthlyBtn.classList.remove('active-gradient', 'bg-tertiary', 'text-primary');
+
+                // Set active/inactive styles
+                if (currentDashboardView === 'weekly') {
+                    weeklyBtn.classList.add('active-gradient');
+                    monthlyBtn.classList.add('bg-tertiary', 'text-primary');
+                } else {
+                    monthlyBtn.classList.add('active-gradient');
+                    weeklyBtn.classList.add('bg-tertiary', 'text-primary');
+                }
+
                 const { startDate, endDate } = getDashboardDateRange();
                 const stats = aggregateStatsForPeriod(startDate, endDate);
                 avgScoreEl.textContent = stats.averageScore.toFixed(1);
                 totalProductiveTimeEl.textContent = formatDuration(stats.productiveTime, true);
                 totalDistractionTimeEl.textContent = formatDuration(stats.distractionTime, true);
-                renderAnalyticsChart(stats.categoryTotals);
+                renderAnalyticsChart(stats.dailyData);
             }
             function getDashboardDateRange() {
                 const today = new Date(currentDate + 'T00:00:00');
@@ -892,16 +997,25 @@
                 let totalMinutes = {};
                 let totalScore = 0;
                 let daysWithLogs = 0;
+                let dailyData = { labels: [], scores: [] };
                 const allLogs = getCurrentProfile().logs;
+
                 for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
                     const dateStr = d.toISOString().split('T')[0];
                     const dayLog = allLogs[dateStr];
+                    
+                    dailyData.labels.push(dateStr.slice(5)); // Format as MM-DD
+                    
                     if (dayLog && dayLog.length > 0) {
                         daysWithLogs++;
-                        totalScore += dayLog.reduce((sum, e) => sum + e.points, 0);
+                        const dayScore = dayLog.reduce((sum, e) => sum + e.points, 0);
+                        totalScore += dayScore;
+                        dailyData.scores.push(dayScore);
                         dayLog.forEach(entry => {
                             totalMinutes[entry.category] = (totalMinutes[entry.category] || 0) + entry.duration;
                         });
+                    } else {
+                        dailyData.scores.push(0);
                     }
                 }
                 const productiveTime = (totalMinutes['deep-work'] || 0) + (totalMinutes['shallow-work'] || 0);
@@ -910,27 +1024,58 @@
                     averageScore: daysWithLogs > 0 ? totalScore / daysWithLogs : 0,
                     productiveTime,
                     distractionTime,
-                    categoryTotals: totalMinutes
+                    dailyData
                 };
             }
-            function renderAnalyticsChart(categoryTotals) {
+            function renderAnalyticsChart(dailyData) {
                 const computedStyles = getComputedStyle(document.documentElement);
                 const gridColor = computedStyles.getPropertyValue('--color-chart-grid').trim();
                 const tickColor = computedStyles.getPropertyValue('--color-chart-ticks').trim();
+                const accentColor = computedStyles.getPropertyValue('--color-accent').trim();
 
                 const ctx = chartCanvas.getContext('2d');
-                const labels = Object.values(CATEGORY_STYLES).map(s => s.label);
-                const data = labels.map(label => {
-                    const catKey = Object.keys(CATEGORY_STYLES).find(key => CATEGORY_STYLES[key].label === label);
-                    return (categoryTotals[catKey] || 0) / 60;
-                });
-                const backgroundColors = Object.values(CATEGORY_STYLES).map(s => computedStyles.getPropertyValue(s.color.slice(4, -1)).trim());
                 
                 if (analyticsChart) analyticsChart.destroy();
                 
                 analyticsChart = new Chart(ctx, {
-                    type: 'bar', data: { labels, datasets: [{ label: 'Hours Spent', data, backgroundColor: backgroundColors, borderWidth: 1 }] },
-                    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', scales: { x: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor } }, y: { grid: { color: gridColor }, ticks: { color: tickColor } } }, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `Hours: ${c.raw.toFixed(2)}` } } } }
+                    type: 'line',
+                    data: {
+                        labels: dailyData.labels,
+                        datasets: [{
+                            label: 'Daily Score',
+                            data: dailyData.scores,
+                            borderColor: accentColor,
+                            backgroundColor: accentColor + '33', // semi-transparent fill
+                            fill: true,
+                            tension: 0.3,
+                            pointBackgroundColor: accentColor,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: {
+                                grid: { color: gridColor },
+                                ticks: { color: tickColor }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                grid: { color: gridColor },
+                                ticks: { color: tickColor }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: (c) => `Score: ${c.raw.toFixed(1)}`
+                                }
+                            }
+                        }
+                    }
                 });
             }
 
