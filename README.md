@@ -1,6 +1,55 @@
-# Welcome to the Productivity Tracker!
+# Welcome to the Productivity Tracker (PKI)!
 
-Welcome to your new Productivity Tracker! This guide will help you master its features to understand and boost your daily effectiveness.
+---
+
+> A comprehensive, single-page web application for detailed personal productivity tracking.
+
+PKI is designed to be a lightweight and powerful tool for anyone looking to gain insight into their daily habits and improve their focus. It operates entirely within your browser, ensuring your data remains private and local.
+
+*   🌐 **100% Browser-Based:** No backend or server communication required.
+*   🔐 **No Accounts Needed:** Your data is yours. It's all saved locally on your device.
+*   ⚡ **Lightweight & Fast:** Built with vanilla technologies for maximum performance.
+
+---
+
+## How It Works
+
+1.  **Log Your Activities:** Record what you're working on throughout the day.
+2.  **Categorize Entries:** Assign a category to each activity, such as `Deep Work`, `Shallow Work`, or `Distraction`.
+3.  **Get Your Score:** The app calculates a daily **Productivity Score** based on the duration and category of your activities, giving you an at-a-glance metric of your effectiveness.
+
+---
+
+## Key Features
+
+### 🚀 Multi-Profile Support
+Create and manage separate profiles to keep your work, personal projects, or different users' data completely isolated.
+
+### 🎮 Gamification
+Stay motivated with a **Daily Quest System** that challenges you with goals based on your productivity metrics (e.g., "Achieve 2 hours of Deep Work").
+
+### 📊 Advanced Analytics
+Visualize your progress with an integrated dashboard. Track trends with weekly and monthly charts showing time spent per category and your average daily scores.
+
+### 🎨 Customization
+Tailor the app to your liking. Features a clean, collapsible sidebar and multiple color themes to choose from, including **Dark**, **Light**, and **Forest**.
+
+### 💾 Data Portability
+You own your data. Perform full backups and restores from a single JSON file. You can also export daily logs individually to **.csv** or **Markdown** formats.
+
+---
+
+## Technology Stack
+
+Built with a focus on simplicity and performance:
+*   **JavaScript:** Vanilla JS for all core logic.
+*   **HTML:** For semantic structure.
+*   **Tailwind CSS:** For a modern, utility-first design.
+
+# User Guide
+This guide will help you master its features to understand and boost your daily effectiveness.
+
+---
 
 ## 1. Getting Started: Logging Your First Activity
 
